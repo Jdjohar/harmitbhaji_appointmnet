@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <% include partials/head %> 
+</head>
+<body>
+<% include partials/menu %>
+
+<div class="container-fluid bg-3 text-center">    
+  <h3><%= page %></h3><br>
+  <div class="row">
+
+    <div class="col-md-4 offset-md-4">
+      <form>
+        <div class="form-group">
+          <label>Enter in each Service with its cost and duration</label>
+          <input type="text" class="form-control" id="businessname"  placeholder="Business Name">
+        </div>
+        <div class="form-group">
+            <label class="sr-only" for="inlineFormInputGroupTime">Time</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <div class="input-group-text">Hrs</div>
+              </div>
+              <input type="text" class="form-control" id="inlineFormInputGroupTime" placeholder="Username">
+            </div>
+        </div>
+        <div id="Province-div" class="form-group" >
+         
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <div class="input-group-text">mins</div>
+              </div>
+              <input type="text" class="form-control" id="inlineFormInputGroupUsername" placeholder="Username">
+            </div>
+        </div>
+        <div id="city-div" class="form-group">
+            <label class="sr-only" for="inlineFormInputGroupCost">Cost</label>
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <div class="input-group-text">$</div>
+              </div>
+              <input type="text" class="form-control" id="inlineFormInputGroupUsername" placeholder="Username">
+            </div>
+        </div>
+
+        <div class="form-group">
+          <a href="#" >Add services</a>
+         
+        </div>
+        
+        <!-- <button type="submit" class="btn btn-primary">Next</button> -->
+        <a href="#" class="btn btn-primary">Next</a>
+        <a href="#" class="btn btn-primary">Skip</a>
+      </form>
+    </div>
+
+  </div>
+</div>
+<script>
+  function change(value)
+  {
+    if(value == 'Canada')
+    {
+      document.getElementById('Province-div').style.display = 'block';
+      document.getElementById('city-div').style.display = 'block';
+    }else{
+      document.getElementById('Province-div').style.display = 'none';
+      document.getElementById('city-div').style.display = 'none';
+    }
+  }
+</script>
+</body>
+<% include partials/script %>
+</html>

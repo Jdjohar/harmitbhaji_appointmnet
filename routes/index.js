@@ -13,5 +13,11 @@ router.get('/about', function(req, res, next) {
 router.get('/contact', function(req, res, next) {
   res.render('contact', {page:'Contact Us', menuId:'contact'});
 });
+router.get('/next', function(req, res, next) {
+  res.render('next', {page:'Second ', menuId:'second'});
+});
+router.get('/service', function(req, res, next) {
+  res.render('service', {page:'service ', menuId:'second'});
+});
 
 module.exports = router;

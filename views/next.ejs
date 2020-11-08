@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+ <% include partials/head %> 
+</head>
+<body>
+<% include partials/menu %>
+
+<div class="container-fluid bg-3 ">    
+  <h3 class="text-center">Calendar</h3><br>
+  <div class="row">
+
+    <div class="col-md-4 offset-md-4">
+      <form>
+        <div class="form-group">
+          <label>Select all days operating<span class="text-danger">*</span></label>
+       <ul class="nav nav-tabs" id="myTab" role="tablist">
+  <li class="nav-item">
+    <a class="nav-link active" id="mon-tab" data-toggle="tab" href="#mon" role="tab" aria-controls="mon" aria-selected="true">Mon</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="tue-tab" data-toggle="tab" href="#tue" role="tab" aria-controls="tue" aria-selected="false">Tue</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="wed-tab" data-toggle="tab" href="#wed" role="tab" aria-controls="wed" aria-selected="false">Wed</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="thur-tab" data-toggle="tab" href="#thur" role="tab" aria-controls="thur" aria-selected="false">Thur</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="fri-tab" data-toggle="tab" href="#fri" role="tab" aria-controls="fri" aria-selected="false">Fri</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="sat-tab" data-toggle="tab" href="#sat" role="tab" aria-controls="sat" aria-selected="false">Sat</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" id="sun-tab" data-toggle="tab" href="#sun" role="tab" aria-controls="sun" aria-selected="false">Sun</a>
+  </li>
+</ul>
+
+
+
+<div class="tab-content" id="myTabContent">
+  
+  <div class="tab-pane fade show active" id="mon" role="tabpanel" aria-labelledby="mon-tab">
+   <label for="exampleInputPassword1">Time Operating <span class="text-danger">*</span></label>
+  <div class="row">
+        <div class="col">
+        <input type="time" class="form-control" placeholder="First name">
+        </div>
+        <div class="col">
+        <input type="time" class="form-control" placeholder="Last name">
+        </div>
+     </div>
+  </div>
+  
+  <div class="tab-pane fade" id="tue" role="tabpanel" aria-labelledby="tue-tab">
+   <label for="exampleInputPassword1">Time Operating</label>
+  
+  <div class="row">
+        <div class="col">
+        <input type="time" class="form-control" placeholder="First name">
+        </div>
+        <div class="col">
+        <input type="time" class="form-control" placeholder="Last name">
+        </div>
+      </div>
+
+        <div class="form-check" ">
+          <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1" checked>
+          <label class="form-check-label" for="exampleRadios1">
+            Application to all days operating
+          </label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" onchange="change(this.value)" name="exampleRadios" id="exampleRadios2" value="option2">
+          <label class="form-check-label" for="exampleRadios2">
+            Customize time per day
+          </label>
+        </div>
+
+       <div clas="" id="Province-div" style="display:none;">
+
+      
+        <label for="exampleInputPassword1">Select days per custom timing <span class="text-danger">*</span></label>
+          <select class="form-control">
+            <option>Monday</option>
+            <option>Tuesday</option>
+            <option>Wednesday</option>
+          </select>
+        </div>
+        <div clas="" id="city-div"  style="display:none;">
+          <label for="exampleInputPassword1">Time Operating</label>
+         
+          <div class="row">
+            <div class="col">
+            <input type="time" class="form-control" placeholder="First name">
+            </div>
+            <div class="col">
+            <input type="time" class="form-control" placeholder="Last name">
+            </div>
+         </div>
+
+         <a href="#" class="text-center">Add Day</a>
+        </div>
+
+        
+
+
+
+    
+
+
+  </div>
+  <div class="tab-pane fade" id="wed" role="tabpanel" aria-labelledby="wed-tab">
+   <label for="exampleInputPassword1">Time Operating</label>
+  <div class="row">
+        <div class="col">
+        <input type="time" class="form-control" placeholder="First name">
+        </div>
+        <div class="col">
+        <input type="time" class="form-control" placeholder="Last name">
+        </div>
+     </div>
+     </div>
+  <div class="tab-pane fade show" id="thur" role="tabpanel" aria-labelledby="thur-tab">
+   <label for="exampleInputPassword1">Time Operating</label>
+  
+  <div class="row">
+        <div class="col">
+        <input type="time" class="form-control" placeholder="First name">
+        </div>
+        <div class="col">
+        <input type="time" class="form-control" placeholder="Last name">
+        </div>
+     </div></div>
+  <div class="tab-pane fade" id="fri" role="tabpanel" aria-labelledby="fri-tab">
+   <label for="exampleInputPassword1">Time Operating</label>
+  <div class="row">
+        <div class="col">
+        <input type="time" class="form-control" placeholder="First name">
+        </div>
+        <div class="col">
+        <input type="time" class="form-control" placeholder="Last name">
+        </div>
+     </div>
+  </div>
+  <div class="tab-pane fade" id="sat" role="tabpanel" aria-labelledby="sat-tab">
+   <label for="exampleInputPassword1">Time Operating</label>
+  <div class="row">
+        <div class="col">
+        <input type="time" class="form-control" placeholder="First name">
+        </div>
+        <div class="col">
+        <input type="time" class="form-control" placeholder="Last name">
+        </div>
+     </div>
+  </div>
+  <div class="tab-pane fade" id="sun" role="tabpanel" aria-labelledby="sun-tab">
+   <label for="exampleInputPassword1">Time Operating</label>
+  <div class="row">
+        <div class="col">
+        <input type="time" class="form-control" placeholder="First name">
+        </div>
+        <div class="col">
+        <input type="time" class="form-control" placeholder="Last name">
+        </div>
+     </div>
+  </div>
+</div>
+        </div>
+ 
+       
+       
+
+     
+        
+        <!-- <button type="submit" class="btn btn-primary">Next</button> -->
+        <a href="service" class="btn btn-primary">Next</a>
+      </form>
+    </div>
+
+  </div>
+</div>
+<script>
+  function change(value)
+  {
+    if(value == 'option2')
+    {
+      document.getElementById('Province-div').style.display = 'block';
+      document.getElementById('city-div').style.display = 'block';
+    }else{
+      document.getElementById('Province-div').style.display = 'none';
+      document.getElementById('city-div').style.display = 'none';
+    }
+  }
+</script>
+</body>
+<% include partials/script %>
+</html>
