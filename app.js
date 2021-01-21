@@ -1,8 +1,11 @@
+require("dotenv").config();
 var express = require('express');
+const db = require('./db')
 var path = require('path');
 var logger = require('morgan');
 var index = require('./routes/index');
 var app = express();
+var nodemailer = require('nodemailer');
 
 
 // view engine setup
@@ -29,5 +32,12 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error', {status:err.status, message:err.message});
 });
+
+
+// mailer
+
+
+
+
 
 module.exports = app;
