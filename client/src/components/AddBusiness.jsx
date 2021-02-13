@@ -1,22 +1,31 @@
 import React, { useContext, useState } from "react"
+import ReactDOM from "react-dom";
 import Businessall from '../apis/Businessall'
 import { useHistory } from "react-router-dom";
 import { BusinessContext } from "../context/BusinessContext";
-import {Helmet} from 'react-helmet';
 
-const AddBuisness = () => {
- let history = useHistory();
+const AddBuisness = () =>   {
+
+  const script = document.createElement("script");
+  script.src = "../path/hello.js";
+  script.async = true;
+
+  document.body.appendChild(script);
+
+
+  let history = useHistory();
 const {addBuisness1} =useContext(BusinessContext);
 const [business_name, setbusiness_name] = useState("");
+const [business_email, setbusiness_email] = useState("");
 const [country, setcountry] = useState("");
 const [city, setcity] = useState("");
 const [province, setprovince] = useState("");
 const [phonenumber , setphonenumber ] = useState("");
-const [country_id  , setcountry_id  ] = useState("");
-const [province_id  , setprovince_id  ] = useState("");
-const [city_id   , setcity_id   ] = useState("");
-const [business_reg_date   , setbusiness_reg_date   ] = useState("");
-const [business_paid_date   , setbusiness_paid_date   ] = useState("");
+// const [country_id  , setcountry_id  ] = useState("");
+// const [province_id  , setprovince_id  ] = useState("");
+// const [city_id   , setcity_id   ] = useState("");
+// const [business_reg_date   , setbusiness_reg_date   ] = useState("");
+// const [business_paid_date   , setbusiness_paid_date   ] = useState("");
 
 // const handlenextTime = (id) => {
 //   // eslint-disable-next-line no-restricted-globals
@@ -28,17 +37,18 @@ const handleSubmit = async (e, id) => {
   try{
    const response = await Businessall.post("/", {
       business_name,
+      business_email,
       country,
       city,
       province,
       phonenumber,
-      country_id,
-      province_id,
-      city_id,
-      business_reg_date,
-      business_paid_date
+      // country_id,
+      // province_id,
+      // city_id,
+      // business_reg_date,
+      // business_paid_date
     });
- history.push(`/business/${id}/time`);
+ history.push(`/business/1/time`);
     addBuisness1(response.data.data.business)
     console.log(response);
   }catch (err) {
@@ -49,21 +59,24 @@ const handleSubmit = async (e, id) => {
 
   return(
     <div className="mb-4"> 
-
-    <Helmet>
-      <scrip>console.log("hello");</scrip>
-    </Helmet>
+<div id="demo"></div>
 
     <form  action="">
-      <input value={business_name}    placeholder="Business Name"  onChange={(e) => setbusiness_name(e.target.value)} type="text" className="form-control"
-      />  
-
-      
-<select 
-id="country"  
-value={country}
-onChange={(e) => setcountry(e.target.value)} 
- name="country" className="form-control">
+    <div className="form-group">
+    <label for="exampleInputEmail1">Business Name</label>
+      <input value={business_name}    placeholder="Business Name"  onChange={(e) => setbusiness_name(e.target.value)} type="text" className="form-control"/>  
+    </div>
+    <div className="form-group">
+    <label for="exampleInputEmail1">Business Email</label>
+      <input value={business_email}    placeholder="Business Email"  onChange={(e) => setbusiness_email(e.target.value)} type="text" className="form-control"/>  
+    </div>
+    <div className="form-group">
+    <label for="exampleInputEmail1">Select Country</label>
+      <select 
+      id="country"  
+      value={country}
+      onChange={(e) => setcountry(e.target.value)} 
+      name="country" className="form-control">
             <option value="Afghanistan">Afghanistan</option>
             <option value="Åland Islands">Åland Islands</option>
             <option value="Albania">Albania</option>
@@ -309,7 +322,8 @@ onChange={(e) => setcountry(e.target.value)}
             <option value="Zambia">Zambia</option>
             <option value="Zimbabwe">Zimbabwe</option>
         </select>
-        <div id="Province-div"  value={province}
+    </div>
+        <div  id="Province-div"  value={province}
         onChange={(e) => setprovince(e.target.value)} className="form-group" style={{display:"block"}}>
           <label for="exampleInputPassword1">Province <span className="text-danger">*</span></label>
           <select  className="form-control">
@@ -330,6 +344,8 @@ onChange={(e) => setcountry(e.target.value)}
     
           </select>
         </div>
+        <div class="form-group" style={{display:"block"}}>
+    <label for="exampleInputEmail1">City</label>
         <input 
         value={city}
         style={{display:"block"}}
@@ -338,16 +354,20 @@ onChange={(e) => setcountry(e.target.value)}
         placeholder="City"
         className="form-control"
       />
+      </div>
 
-        <input 
+<div className="form-group" style={{display:"block"}}>
+<label >Phone Number</label>
+<input 
         value={phonenumber}
         onChange={(e) => setphonenumber(e.target.value)}
         type="text"
         placeholder="Phone Number"
         className="form-control"
       />
+</div>
 
-        <input 
+        {/* <input 
         value={country_id}
        
         onChange={(e) => setcountry_id(e.target.value)}
@@ -383,9 +403,9 @@ onChange={(e) => setcountry(e.target.value)}
               placeholder="paid" 
               onChange={(e) => setbusiness_paid_date(e.target.value)} 
               type="text" className="form-control"
-      />
+      /> */}
 
-      <button type="submit" onClick={handleSubmit}>Submit</button>
+      <button type="submit" className="btn btn-primary  " onClick={handleSubmit}>Submit</button>
 
 
     </form>

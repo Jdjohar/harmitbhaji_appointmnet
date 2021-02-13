@@ -1,8 +1,16 @@
 import React, { useState } from "react"
 import WeekTime from '../apis/WeekTime'
+import ReactDOM from "react-dom";
 import { useHistory } from "react-router-dom";
    
+
+
 const AddTime = () => {
+
+
+
+
+
     let history = useHistory();
 
     const [business_id, setbusiness_id] = useState("");
@@ -20,7 +28,7 @@ const AddTime = () => {
                 end_time
 
             });
-            history.push(`/business/${id}/services`);
+            history.push(`/business/1/services`);
     console.log(response);
             
 
@@ -28,12 +36,20 @@ const AddTime = () => {
 
         }
     }
+   
     return (
         <div className="addTime">
+           
 
-        <div className="row">
-        <div className="col">
-                        <small for="from">Business id </small>
+        <div className="custom-control custom-radio custom-control-inline pb-3">
+                    <input type="radio" id="customRadioInline1" name="customRadioInline1" className="custom-control-input" />
+                    <label className="custom-control-label" for="customRadioInline1">Application to all days operating</label>
+        </div>
+              
+
+        <div className="">
+                     <div className="form-group col-6 float-left">
+                     <label for="exampleInputEmail1">Business ID</label>
                         <input 
                             value={business_id}
                             onChange={(e) => setbusiness_id(e.target.value)}
@@ -44,8 +60,8 @@ const AddTime = () => {
                     </div>
 
                  
-                    <div className="col">
-                        <small for="from">From </small>
+                    <div className="form-group col-6 float-left">
+                     <label for="exampleInputEmail1">From</label>
                         <input 
                             value={start_time}
                             onChange={(e) => setstart_time(e.target.value)}
@@ -54,8 +70,8 @@ const AddTime = () => {
                             placeholder="Start Time" 
                         />
                     </div>
-                    <div className="col">
-                        <small for="from">To </small>
+                    <div className="form-group col-6 float-left">
+                     <label for="exampleInputEmail1">To</label>
                         <input 
                             value={end_time}
                             onChange={(e) => setend_time(e.target.value)}
@@ -64,8 +80,8 @@ const AddTime = () => {
                             placeholder="End Time" 
                         />
                     </div>
-                    <div className="col">
-                        <small for="from">Day name </small>
+                    <div className="form-group col-6 float-left">
+                     <label for="exampleInputEmail1">Day name</label>
                         <input 
                             value={day_name}
                             onChange={(e) => setday_name(e.target.value)}
@@ -76,23 +92,17 @@ const AddTime = () => {
                     </div>
         </div>
 
-        <div className="form-check">
-                    <input className="form-check-input" type="radio"  name="exampleRadios" id="exampleRadios1" value="option1" checked />
-                    <label className="form-check-label" for="exampleRadios1">
-                        Application to all days operating
-                    </label>
-                </div>
-                <div className="form-check">
-                    <input className="form-check-input" type="radio"  name="exampleRadios" id="exampleRadios2" value="option2" />
-                    <label className="form-check-label" for="exampleRadios2">
-                        Customize time per day
-                    </label>
-                </div>
+
+               
+                    <div class="custom-control custom-radio custom-control-inline py-2">
+                        <input type="radio" id="customRadioInline2" name="customRadioInline1" class="custom-control-input" />
+                        <label class="custom-control-label" for="customRadioInline2">Customize time per day</label>
+                    </div>
 
                 <form>
-                        <div className="form-group d-none" id="Province-div">
+                        <div className="form-group py-3" id="Province-div">
                             <label>Select all days operating<span className="text-danger">*</span></label>
-                            <ul className="nav nav-tabs" id="myTab" role="tablist">
+                            <ul className="nav nav-tabs pb-3" id="myTab" role="tablist">
                                 <li className="nav-item">
                                     <a className="nav-link active" id="mon-tab" data-toggle="tab" href="#mon" role="tab" aria-controls="mon" aria-selected="true">Mon</a>
                                 </li>
@@ -208,13 +218,14 @@ const AddTime = () => {
                         </div>
 {/* 
                         <button type="submit" className="btn btn-primary">Next</button>  */}
-                        <button type="submit" onClick={handleSubmit} className="btn btn-primary">Next</button>
+                        <button type="submit"  onClick={handleSubmit} className="btn mt-3 btn-primary">Next</button>
                     </form>                   
 
         </div>
         
 
     )
+    
 }
 
 export default AddTime;
