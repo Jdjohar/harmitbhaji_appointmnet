@@ -7,7 +7,7 @@ const pool = new Pool({
     const client = await pool.connect();
     const result = await client.query('SELECT * FROM business_appoint');
     const results = { 'results': (result) ? result.rows : null};
-    res.render('pages/db', results );
+    res.send(JSON.stringify(result));
     client.release();
   } catch (err) {
     console.error(err);
