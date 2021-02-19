@@ -44,7 +44,18 @@ console.log("jashan");
 
 });
 
-
+router.get('/db', async (req, res) => {
+  try {
+    const client = await pool.connect();
+    const result = await client.query('SELECT * FROM business_appoint');
+    const results = { 'results': (result) ? result.rows : null};
+    res.send(JSON.stringify(result));
+    client.release();
+  } catch (err) {
+    console.error(err);
+    res.send("Error " + err);
+  }
+})
 
 router.get("/send",  (req, res) => {
   res.render('send', {page:'send ', menuId:'second'});
