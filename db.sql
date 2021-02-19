@@ -29,6 +29,15 @@ CREATE TABLE business (
     business_paid_date DATE  NULL,
     business_paid_plan DATE  NULL
 );
+CREATE TABLE business_appoint (
+    id BIGSERIAL NOT NULL PRIMARY KEY,
+    business_name VARCHAR(50) NOT NULL,
+    business_email VARCHAR(50) NOT NULL,
+    country VARCHAR(50) NOT NULL,
+    city VARCHAR(50) NOT NULL,
+    province VARCHAR(50) NOT NULL,
+    phonenumber VARCHAR(50) NOT NULL
+);
 
 CREATE TABLE add_services (
     id BIGSERIAL NOT NULL PRIMARY KEY,
