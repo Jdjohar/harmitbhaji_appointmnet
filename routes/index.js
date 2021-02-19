@@ -12,8 +12,11 @@ var nodemailer = require('nodemailer');
 const ical = require('ical-generator');
 
 const pool = new Pool({
-  connectionString:process.env.DATABASE_URL
-})
+  connectionString:process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
 
 var router = express.Router();
 
