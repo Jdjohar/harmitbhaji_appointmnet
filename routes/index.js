@@ -63,11 +63,8 @@ router.get('/db', async (req, res) => {
 router.get("/send",  (req, res) => {
   res.render('send', {page:'send ', menuId:'second'});
 
-  const output = ` 
-  
-  <p>Your ICS file here</p>
-  <a href="www.jdwebservices.com/test.ics">ICS file</a>
-  `;
+  const output = `<p>Your ICS file here</p>
+  <a href="www.jdwebservices.com/test.ics">ICS file</a>`;
 
   
 var transporter = nodemailer.createTransport({
@@ -248,7 +245,7 @@ router.get("/icsexport",  (req, res) => {
 // Get all business
 router.get("/api/v1/business", async (req, res) => {
   try{
-    const results = await db.query("select * from business");
+    const results = await db.query("select * from business_appoint");
     // console.log(results);
     res.status(200).json({
       status: "success",
