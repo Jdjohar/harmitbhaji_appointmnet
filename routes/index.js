@@ -13,7 +13,7 @@ const ical = require('ical-generator');
 
 const pool = new Pool({
   connectionString:process.env.DATABASE_URL,
-  ssl: false
+  ssl: true
 });
 
 var router = express.Router();
