@@ -304,7 +304,7 @@ router.post("/api/v1/business", async (req, res) => {
 
   try{
 
-    const results = await db.query("INSERT INTO business(business_name, country, city, province, phonenumber, country_id, province_id, city_id, business_reg_date, business_paid_plan) values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) returning *", [req.body.business_name, req.body.country, req.body.city, req.body.province,req.body.phonenumber,req.body.country_id,req.body.province_id,req.body.city_id,req.body.business_reg_date,req.body.business_paid_plan ] );
+    const results = await db.query("INSERT INTO business_appoint(business_name, business_email, country, city, province, phonenumber) values ($1, $2, $3, $4, $5, $6) returning *", [req.body.business_name,req.body.business_email, req.body.country, req.body.city, req.body.province,req.body.phonenumber] );
     console.log(results);
 
     res.status(201).json({
