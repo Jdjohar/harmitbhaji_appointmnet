@@ -360,7 +360,7 @@ router.post("/api/v1/business/:id/services", async (req, res) => {
   try{
 
     const results = await db.query(
-      "INSERT INTO add_services( servicename, servicecost, servicetime, weektime_id,business_id) values ($1, $2, $3, $4, $5) returning *", [req.body.servicename, req.body.servicecost, req.body.servicetime, req.body.weektime_id,  req.body.business_id ],);
+      "INSERT INTO add_services( servicename, servicecost, servicetime, weektime_id,business_id) values ($1, $2, $3, $4, $5) returning *", [req.body.servicename, req.body.servicecost, req.body.servicetime, "1",  "1" ],);
     console.log(results);
 
     res.status(201).json({
