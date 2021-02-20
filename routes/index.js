@@ -2,6 +2,7 @@ var express = require('express');
 const morgan = require("morgan");
 var bodyParser = require('body-parser')
 const app = require('../app');
+const db = require('../db');
 const cors = require('cors');
 const { Pool } = require('pg')
 const axios = require('axios');
@@ -11,10 +12,10 @@ const { writeFileSync } = require('fs');
 var nodemailer = require('nodemailer');
 const ical = require('ical-generator');
 
-const pool = new Pool({
-  connectionString:process.env.DATABASE_URL,
-  ssl:{ rejectUnauthorized: false }
-});
+// const pool = new Pool({
+//   connectionString:process.env.DATABASE_URL,
+//   ssl:{ rejectUnauthorized: false }
+// });
 
 var router = express.Router();
 
@@ -47,24 +48,27 @@ console.log("jashan");
 
 });
 
-router.get('/db', async (req, res) => {
-  try {
-    const client = await pool.connect();
-    const result = await client.query('SELECT * FROM business_appoint');
-    const results = { 'results': (result) ? result.rows : null};
-    res.send(JSON.stringify(result));
-    client.release();
-  } catch (err) {
-    console.error(err);
-    res.send("Error " + err);
-  }
-})
+// router.get('/db', async (req, res) => {
+//   try {
+//     const client = await pool.connect();
+//     const result = await client.query('SELECT * FROM business_appoint');
+//     const results = { 'results': (result) ? result.rows : null};
+//     res.send(JSON.stringify(result));
+//     client.release();
+//   } catch (err) {
+//     console.error(err);
+//     res.send("Error " + err);
+//   }
+// })
 
 router.get("/send",  (req, res) => {
   res.render('send', {page:'send ', menuId:'second'});
 
-  const output = `<p>Your ICS file here</p>
-  <a href="www.jdwebservices.com/test.ics">ICS file</a>`;
+  const output = ` 
+  
+  <p>Your ICS file here</p>
+  <a href="www.jdwebservices.com/test.ics">ICS file</a>
+  `;
 
   
 var transporter = nodemailer.createTransport({
