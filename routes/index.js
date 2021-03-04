@@ -21,7 +21,7 @@ var router = express.Router();
 
 // router.use(morgan("dev"));
 
-router.use(cors({origin: 'https://tachitool-node.herokuapp.com/'}));
+router.use(cors({origin: 'http://localhost:3001/'}));
 router.use(bodyParser.json());
 
 /* GET home page. */
