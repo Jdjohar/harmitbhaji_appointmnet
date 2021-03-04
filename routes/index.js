@@ -22,6 +22,10 @@ var router = express.Router();
 // router.use(morgan("dev"));
 
 router.use(cors());
+var corsOptions = {
+  origin: 'http://localhost:3001/',
+  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
 router.use(bodyParser.json());
 
 /* GET home page. */
@@ -247,7 +251,7 @@ router.get("/icsexport",  (req, res) => {
 
 
 // Get all business
-router.get("/api/v1/business", async (req, res) => {
+router.get("/api/v1/business", cors(corsOptions), async (req, res) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
