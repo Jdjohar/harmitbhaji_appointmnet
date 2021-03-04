@@ -2,6 +2,7 @@
   "name": "website",
   "version": "0.0.0",
   "private": true,
+  "proxy":"https://tachitools.herokuapp.com/",
   "scripts": {
     "start": "node ./bin/www"
   },
