@@ -24,7 +24,7 @@ var router = express.Router();
 
 router.use(cors());
 
-var allowlist = ['http://localhost:3001/', 'http://tachitools.herokuapp.com/']
+var allowlist = ['http://localhost:3001', 'http://tachitools.herokuapp.com/']
 var corsOptionsDelegate = function (req, callback) {
   var corsOptions;
   if (allowlist.indexOf(req.header('Origin')) !== -1) {
