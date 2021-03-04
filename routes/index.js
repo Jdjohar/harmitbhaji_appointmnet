@@ -252,9 +252,7 @@ router.get("/icsexport",  (req, res) => {
 
 // Get all business
 router.get("/api/v1/business", cors(corsOptions), async (req, res) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-
+  
   try{
     const results = await db.query("select * from business_appoint");
     // console.log(results);
@@ -307,19 +305,10 @@ res.status(200).json({
 
 // CREAT A BUSINESS
 router.post("/api/v1/business", async (req, res) => {
-   // Website you wish to allow to connect
-   res.setHeader('Access-Control-Allow-Origin', '*');
-
-   // Request methods you wish to allow
-   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
- 
-   // Request headers you wish to allow
-   res.setHeader('Access-Control-Allow-Headers', 'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers,X-Access-Token,XKey,Authorization');
- 
- //  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
- 
-   // Pass to next layer of middleware
-   next();
+  res.header('Access-Control-Allow-Origin', corsOrigin);
+  res.header('Access-Control-Allow-Methods', corsMethod);
+  res.header('Access-Control-Allow-Headers', corsHeaders);
+  res.header('Access-Control-Max-Age', 60 * 60 * 24);
   console.log(req.body);
 
   try{
