@@ -303,8 +303,9 @@ res.status(200).json({
 
 // CREAT A BUSINESS
 router.post("/api/v1/business", async (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 
-  res.header('Access-Control-Allow-Origin', "*")
   console.log(req.body);
 
   try{
