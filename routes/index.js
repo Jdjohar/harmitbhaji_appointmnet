@@ -265,7 +265,7 @@ router.get("/icsexport",  (req, res) => {
 
 
 // Get all business
-router.get("/api/v1/business", cors(corsOptionsDelegate), async (req, res) => {
+router.get("/api/v1/business", async (req, res) => {
   
   try{
     const results = await db.query("select * from business_appoint");
@@ -288,7 +288,7 @@ router.get("/api/v1/business", cors(corsOptionsDelegate), async (req, res) => {
 
 // Get One business
 
-router.get("/api/v1/business/:id", async (req, res) => {
+router.get("/api/v1/business/:id",  cors(corsOptionsDelegate), async (req, res) => {
   console.log(req.params.id);
 
   try{
