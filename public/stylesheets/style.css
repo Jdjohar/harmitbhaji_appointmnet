@@ -1,3 +1,7 @@
+body {
+    background: #f3f5f9 !important;
+    margin: 0;
+}
 .bg-3 { 
       background-color: #ffffff;
       color: #555555;
@@ -22,3 +26,15 @@
   .active>a {
     color: #1abc9c !important;;
   }
+
+.nav-tabs .nav-link {
+    border: 1px solid transparent;
+    border-top-left-radius: .25rem;
+    border-top-right-radius: .25rem;
+    background: #fff;
+    border-radius: 100px !important;
+    margin-left: 8px;
+}
+.nav-item a {
+    color: #777777 !important;
+}
