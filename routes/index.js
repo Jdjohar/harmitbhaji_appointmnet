@@ -21,7 +21,7 @@ var router = express.Router();
 
 // router.use(morgan("dev"));
 
-router.use(cors({origin: 'http://localhost:3001/'}));
+router.use(cors({origin: 'https://tachitool-node.herokuapp.com/'}));
 router.use(bodyParser.json());
 
 /* GET home page. */
@@ -248,6 +248,9 @@ router.get("/icsexport",  (req, res) => {
 
 // Get all business
 router.get("/api/v1/business", async (req, res) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+
   try{
     const results = await db.query("select * from business_appoint");
     // console.log(results);
@@ -300,6 +303,8 @@ res.status(200).json({
 
 // CREAT A BUSINESS
 router.post("/api/v1/business", async (req, res) => {
+
+  res.header('Access-Control-Allow-Origin', "*")
   console.log(req.body);
 
   try{
