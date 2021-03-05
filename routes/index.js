@@ -1,18 +1,19 @@
-var express, { response } = require('express');
+var express = require('express');
 const morgan = require("morgan");
-const bodyParser = require('body-parser')
+var bodyParser = require('body-parser')
+// const app = express();
 const app = require('../app');
 const db = require('../db');
-// const cors = require('cors');
+const cors = require('cors');
 const { Pool } = require('pg')
 const axios = require('axios');
-// const { response } = require('express');
+const { response } = require('express');
 const ics = require('ics');
 const { writeFileSync } = require('fs');
 var nodemailer = require('nodemailer');
 const ical = require('ical-generator');
 var router = express.Router();
-router.use(cors());
+
   
 
 // // router.use(morgan("dev"));
@@ -41,12 +42,11 @@ router.use((req, res, next) => {
   }
   next();
 });
-
+router.use(cors());
 // var corsOptions = {
 //   origin: 'http://localhost:3001/',
 //   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 // }
-router.use(bodyParser.urlencoded({ extended:flase}));
 router.use(bodyParser.json());
 
 /* GET home page. */
