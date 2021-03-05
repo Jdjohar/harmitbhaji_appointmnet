@@ -14,7 +14,7 @@ var nodemailer = require('nodemailer');
 const ical = require('ical-generator');
 
 // Add Access Control Allow Origin headers
-app.use((req, res, next) => {
+router.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
