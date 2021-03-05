@@ -1,7 +1,8 @@
 var express = require('express');
 const morgan = require("morgan");
 var bodyParser = require('body-parser')
-const app = require('../app');
+const app = express();
+// const app = require('../app');
 const db = require('../db');
 const cors = require('cors');
 const { Pool } = require('pg')
