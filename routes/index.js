@@ -15,6 +15,13 @@ const ical = require('ical-generator');
 
 
 
+router.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
+
 // const pool = new Pool({
 //   connectionString:process.env.DATABASE_URL,
 //   ssl:{ rejectUnauthorized: false }
