@@ -3,7 +3,7 @@ const morgan = require("morgan");
 const bodyParser = require('body-parser')
 const app = require('../app');
 const db = require('../db');
-const cors = require('cors');
+// const cors = require('cors');
 const { Pool } = require('pg')
 const axios = require('axios');
 // const { response } = require('express');
@@ -29,18 +29,18 @@ var router = express.Router();
 //   next()
 // })
 // Add Access Control Allow Origin headers
-// router.use((req, res, next) => {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header(
-//     "Access-Control-Allow-Headers",
-//     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-//   );
-//   if (req.method ==='OPTIONS'){
-//     res.header('Access-Control-Allow-Methods','PUT, POST, PATCH, DELETE, GET');
-//     return res.status(200).json({});
-//   }
-//   next();
-// });
+router.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  if (req.method ==='OPTIONS'){
+    res.header('Access-Control-Allow-Methods','PUT, POST, PATCH, DELETE, GET');
+    return res.status(200).json({});
+  }
+  next();
+});
 router.use(cors());
 // var corsOptions = {
 //   origin: 'http://localhost:3001/',
