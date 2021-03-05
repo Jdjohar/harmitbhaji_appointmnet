@@ -19,23 +19,9 @@ const ical = require('ical-generator');
 
 var router = express.Router();
 
-
 // router.use(morgan("dev"));
 
 router.use(cors());
-
-var allowlist = ['http://localhost:3001', 'http://tachitools.herokuapp.com/']
-var corsOptionsDelegate = function (req, callback) {
-  var corsOptions;
-  if (allowlist.indexOf(req.header('Origin')) !== -1) {
-    corsOptions = { origin: true } // reflect (enable) the requested origin in the CORS response
-  } else {
-    corsOptions = { origin: false } // disable CORS for this request
-  }
-  callback(null, corsOptions) // callback expects two parameters: error and options
-}
-
-
 var corsOptions = {
   origin: 'http://localhost:3001/',
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
@@ -265,7 +251,7 @@ router.get("/icsexport",  (req, res) => {
 
 
 // Get all business
-router.get("/api/v1/business", async (req, res) => {
+router.get("/api/v1/business", cors(corsOptions), async (req, res) => {
   
   try{
     const results = await db.query("select * from business_appoint");
@@ -288,7 +274,7 @@ router.get("/api/v1/business", async (req, res) => {
 
 // Get One business
 
-router.get("/api/v1/business/:id",  cors(corsOptionsDelegate), async (req, res) => {
+router.get("/api/v1/business/:id", async (req, res) => {
   console.log(req.params.id);
 
   try{
@@ -318,15 +304,11 @@ res.status(200).json({
 });
 
 // CREAT A BUSINESS
-router.post("/api/v1/business", cors(), async (req, res) => {
+router.post("/api/v1/business", async (req, res) => {
 
   console.log(req.body);
 
   try{
-    res.header('Access-Control-Allow-Origin', corsOrigin);
-    res.header('Access-Control-Allow-Methods', corsMethod);
-    res.header('Access-Control-Allow-Headers', corsHeaders);
-    res.header('Access-Control-Max-Age', 60 * 60 * 24);
     const results = await db.query("INSERT INTO business_appoint(business_name, business_email, country, city, province, phonenumber) values ($1, $2, $3, $4, $5, $6) returning *", [req.body.business_name,req.body.business_email, req.body.country, req.body.city, req.body.province,req.body.phonenumber] );
     console.log(results);
 
