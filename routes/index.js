@@ -18,9 +18,9 @@ const ical = require('ical-generator');
 // });
 
 var router = express.Router();
-
-router.use((req, res, next) => {
-   res.setHeader("Access-Control-Allow-Origin", "*");
+// Add Access Control Allow Origin headers
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "https://tachitools.herokuapp.com");
   res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
@@ -327,12 +327,6 @@ res.status(200).json({
 
 // CREAT A BUSINESS
 router.post("/api/v1/business", async (req, res,next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
   console.log(req.body);
 
   try{
