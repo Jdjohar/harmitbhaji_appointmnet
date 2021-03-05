@@ -12,7 +12,7 @@ const { writeFileSync } = require('fs');
 var nodemailer = require('nodemailer');
 const ical = require('ical-generator');
 var router = express.Router();
-
+router.use(cors());
   
 
 // // router.use(morgan("dev"));
@@ -41,7 +41,7 @@ router.use((req, res, next) => {
   }
   next();
 });
-router.use(cors());
+
 // var corsOptions = {
 //   origin: 'http://localhost:3001/',
 //   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
