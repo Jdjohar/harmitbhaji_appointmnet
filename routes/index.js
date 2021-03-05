@@ -1,8 +1,8 @@
 var express = require('express');
 const morgan = require("morgan");
 var bodyParser = require('body-parser')
-const app = express();
-// const app = require('../app');
+// const app = express();
+const app = require('../app');
 const db = require('../db');
 const cors = require('cors');
 const { Pool } = require('pg')
@@ -274,7 +274,7 @@ router.get("/icsexport",  (req, res) => {
 
 
 // Get all business
-router.get("/api/v1/business", cors(corsOptions), async (req, res) => {
+router.get("/api/v1/business", async (req, res) => {
   
   try{
     const results = await db.query("select * from business_appoint");
