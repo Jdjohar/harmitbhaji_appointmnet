@@ -44,10 +44,10 @@ router.use((req, res, next) => {
 // })
 
 router.use(cors());
-var corsOptions = {
-  origin: 'http://localhost:3001/',
-  optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-}
+// var corsOptions = {
+//   origin: 'http://localhost:3001/',
+//   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+// }
 router.use(bodyParser.json());
 
 /* GET home page. */
@@ -327,6 +327,11 @@ res.status(200).json({
 
 // CREAT A BUSINESS
 router.post("/api/v1/business", async (req, res) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
 
   console.log(req.body);
 
