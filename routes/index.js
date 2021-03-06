@@ -26,7 +26,9 @@ var router = express.Router();
 //   }
 //   next()
 // })
-router.use(cors());
+
+
+// router.use(cors());
 // Add Access Control Allow Origin headers
 router.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
