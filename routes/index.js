@@ -13,32 +13,19 @@ const ical = require('ical-generator');
 var router = express.Router();
 router.all(cors());
 
-// // router.use(morgan("dev"));
-// router.use((req, res, next)=>{
-//   res.header("Access-Control-Allow-Origin", "*")
-//   // res.header("Access-Control-Allow-Credentials: true") 
-//   res.header("Access-Control-Allow-Headers", 
-//   "Origin, X-Requested-With, Content-Type, Accept, Authorization")
-//   // res.header("Access-Control-Max-Age", "1000")
-//   if (req.method == "OPTIONS"){
-//       res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET")
-//       return res.status(200).json({})
+// Add Access Control Allow Origin headers
+// router.use((req, res, next) => {
+//   res.header("Access-Control-Allow-Origin", "*");
+//   res.header(
+//     "Access-Control-Allow-Headers",
+//     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+//   );
+//   if (req.method ==='OPTIONS'){
+//     res.header('Access-Control-Allow-Methods','PUT, POST, PATCH, DELETE, GET');
+//     return res.status(200).json({});
 //   }
-//   next()
-// })
-// // Add Access Control Allow Origin headers
-router.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-  );
-  if (req.method ==='OPTIONS'){
-    res.header('Access-Control-Allow-Methods','PUT, POST, PATCH, DELETE, GET');
-    return res.status(200).json({});
-  }
-  next();
-});
+//   next();
+// });
 
 
 /* GET home page. */
@@ -46,16 +33,26 @@ router.get('/', function(req, res, next) {
   res.render('index', {page:'Home', menuId:'home'});
 });
 
+
+/* GET About page. */
 router.get('/about', function(req, res, next) {
   res.render('about', {page:'About Us', menuId:'about'});
 });
 
+
+/* GET Contact page. */
 router.get('/contact', function(req, res, next) {
   res.render('contact', {page:'Contact Us', menuId:'contact'});
 });
+
+
+/* GET Time page. */
 router.get('/next', function(req, res, next) {
   res.render('next', {page:'Second ', menuId:'second'});
 });
+
+
+/* GET Services page. */
 router.get('/service', function(req, res, next) {
   res.render('service', {page:'service ', menuId:'second'});
 });
@@ -65,19 +62,7 @@ console.log("jashan");
 
 });
 
-// router.get('/db', async (req, res) => {
-//   try {
-//     const client = await pool.connect();
-//     const result = await client.query('SELECT * FROM business_appoint');
-//     const results = { 'results': (result) ? result.rows : null};
-//     res.send(JSON.stringify(result));
-//     client.release();
-//   } catch (err) {
-//     console.error(err);
-//     res.send("Error " + err);
-//   }
-// })
-
+// using this route .ics file send to user email.
 router.get("/send",  (req, res) => {
   res.render('send', {page:'send ', menuId:'second'});
 
@@ -166,34 +151,11 @@ router.get("/icsexport",  (req, res) => {
       'END:VALARM\n' +
       'END:VEVENT\n' +
       'END:VCALENDAR'; 
-      
-
-
+    
       return content
 
      }
 
-
-       
-     //  let content = 'BEGIN:VCALENDAR\r\nPRODID:-//ACME/DesktopCalendar//EN\r\nMETHOD:REQUEST\r\n...';
-    //  let content = 'BEGIN:VCALENDAR\n' +
-    //  'VERSION:2.0\n' +
-    //  'BEGIN:VEVENT\n' +
-    //  'SUMMARY:Summary123\n' +
-    //  'DTSTART;VALUE=DATE:20201030T093000Z\n' +
-    //  'DTEND;VALUE=DATE:20201030T113000Z\n' +
-    //  'LOCATION:Webex \n' +
-    //  'DESCRIPTION:Ics file \n' +
-    //  'BUSINESSNAME:`business_name` \n' +
-    //  'STATUS:CONFIRMED\n' +
-    //  'SEQUENCE:3\n' +
-    //  'BEGIN:VALARM\n' +
-    //  'TRIGGER:-PT10M\n' +
-    //  'DESCRIPTION:Description123\n' +
-    //  'ACTION:DISPLAY\n' +
-    //  'END:VALARM\n' +
-    //  'END:VEVENT\n' +
-    //  'END:VCALENDAR'; 
 
     let content = contentdetail("This is an email confiramtion for the following appointment:", "This is summary", business_name, day, phonenumber, service)
 
@@ -280,25 +242,18 @@ router.get("/api/v1/business", async (req, res) => {
   }catch (err) {
     console.log(err);
   }
-
-
 });
 
 
 // Get One business
-
 router.get("/api/v1/business/:id", async (req, res) => {
   console.log(req.params.id);
 
   try{
-const business = await db.query("select * from business where id = $1", [req.params.id,
-]);
-
-
+const business = await db.query("select * from business where id = $1", [req.params.id]);
 const time =  await db.query("select * from week_time where id= $1" , [
   req.params.id,
 ]);
-
 const service =  await db.query("select * from add_services where business_id= $1 and weektime_id=$2" , [
   req.params.id, req.params.id
 ]);
@@ -316,10 +271,11 @@ res.status(200).json({
   }
 });
 
-// CREAT A BUSINESS
+
+
+// CREAT A BUSINESS - Sign up Form
 router.post("/api/v1/business", async (req, res, next) => {
   console.log(req.body);
-
   try{
     const results = await db.query("INSERT INTO business_appoint(business_name, business_email, country, city, province, phonenumber) values ($1, $2, $3, $4, $5, $6) returning *", [req.body.business_name,req.body.business_email, req.body.country, req.body.city, req.body.province,req.body.phonenumber] );
     console.log(results);
@@ -341,8 +297,7 @@ router.post("/api/v1/business", async (req, res, next) => {
 
 
 
-
-// add time all days
+// add time days
 router.post("/api/v1/business/:id/time", async (req, res) => {
   console.log(req.body);
 
