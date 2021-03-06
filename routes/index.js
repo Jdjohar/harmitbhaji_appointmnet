@@ -1,7 +1,5 @@
 var express = require('express');
 const morgan = require("morgan");
-var bodyParser = require('body-parser')
-// const app = express();
 const app = require('../app');
 const db = require('../db');
 const cors = require('cors');
@@ -14,7 +12,6 @@ var nodemailer = require('nodemailer');
 const ical = require('ical-generator');
 var router = express.Router();
 
-  
 
 // // router.use(morgan("dev"));
 // router.use((req, res, next)=>{
@@ -29,6 +26,7 @@ var router = express.Router();
 //   }
 //   next()
 // })
+router.use(cors());
 // Add Access Control Allow Origin headers
 router.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
@@ -42,12 +40,12 @@ router.use((req, res, next) => {
   }
   next();
 });
-router.use(cors());
+
 // var corsOptions = {
 //   origin: 'http://localhost:3001/',
 //   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 // }
-router.use(bodyParser.json());
+
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -325,7 +323,7 @@ res.status(200).json({
 });
 
 // CREAT A BUSINESS
-router.post("/api/v1/business", async (req, res,next) => {
+router.post("/api/v1/business", async (req, res, next) => {
   console.log(req.body);
 
   try{
