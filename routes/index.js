@@ -1,4 +1,4 @@
-const cors = require('cors');
+var cors = require('cors');
 var express = require('express');
 const morgan = require("morgan");
 const app = require('../app');
@@ -11,7 +11,7 @@ const { writeFileSync } = require('fs');
 var nodemailer = require('nodemailer');
 const ical = require('ical-generator');
 var router = express.Router();
-
+router.all(cors());
 
 // // router.use(morgan("dev"));
 // router.use((req, res, next)=>{
@@ -26,27 +26,19 @@ var router = express.Router();
 //   }
 //   next()
 // })
-
-
-router.use(cors());
 // // Add Access Control Allow Origin headers
-// router.use((req, res, next) => {
-//   res.header("Access-Control-Allow-Origin", "*");
-//   res.header(
-//     "Access-Control-Allow-Headers",
-//     "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-//   );
-//   if (req.method ==='OPTIONS'){
-//     res.header('Access-Control-Allow-Methods','PUT, POST, PATCH, DELETE, GET');
-//     return res.status(200).json({});
-//   }
-//   next();
-// });
-
-// var corsOptions = {
-//   origin: 'http://localhost:3001/',
-//   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-// }
+router.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  if (req.method ==='OPTIONS'){
+    res.header('Access-Control-Allow-Methods','PUT, POST, PATCH, DELETE, GET');
+    return res.status(200).json({});
+  }
+  next();
+});
 
 
 /* GET home page. */
