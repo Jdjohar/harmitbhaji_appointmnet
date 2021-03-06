@@ -1,7 +1,7 @@
 require("dotenv").config();
+const cors = require("cors");
 var express = require('express');
 var bodyParser = require('body-parser')
-const cors = require("cors");
 const db = require('./db')
 var path = require('path');
 var logger = require('morgan');
