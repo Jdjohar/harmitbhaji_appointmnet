@@ -10,6 +10,8 @@ const ics = require('ics');
 const { writeFileSync } = require('fs');
 var nodemailer = require('nodemailer');
 const ical = require('ical-generator');
+const bcrypt = require('bcrypt'); //for hashing passwords
+// const flash = require('express-flash');
 var router = express.Router();
 router.all(cors());
 
@@ -388,6 +390,64 @@ console.log(err);
   }
    
 }); 
+
+// Login and register 
+router.get("/users/login", (req, res) => {
+  res.render("login");
+});
+
+router.get("/users/register", (req,res) => {
+  res.render("register")
+})
+
+router.post("/users/login", async(req,res) => {
+  console.log(req.body);
+})
+
+router.post("/users/register", async(req,res) => {
+  let {name, email,password,cpassword} = req.body;
+  //console.log(name, email, password, cpassword);
+
+
+  //form validation
+  let errors = [];
+  if(!name || !email || !password || !cpassword){
+    errors.push({ message: "Please enter all fields"})
+  }
+
+  if(password.length < 2) {
+    errors.push({message: "Password should be atleast 2 characters"});
+  } 
+
+  if(password != cpassword){
+    errors.push({message: "Passwords do not match"})
+  }
+
+  if(errors.length > 0) {
+    res.render("register",{errors:errors});
+  } else {
+    let hashedpassword = await bcrypt.hash(password, 10);
+    
+
+    const results = await db.query(`SELECT * FROM users WHERE email = $1`, [email]);
+    console.log(results.rows);
+
+    if(results.rows.length > 0){
+      errors.push({message : "Email already used!"});
+      res.render("register", {errors:errors});
+    } else {
+      const newUser = await db.query(
+        `INSERT INTO users(name, email, password, cpassword)
+        VALUES($1, $2, $3, $4)
+        `, [name, email, hashedpassword, hashedpassword]
+      )
+      console.log(newUser.rows);
+      req.flash('success_msg', "You are now registered, Please log in");
+      res.redirect("/users/login");
+    }
+  }
+})
+
 
 
 module.exports = router;
