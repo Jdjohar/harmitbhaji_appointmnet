@@ -10,6 +10,9 @@ const ics = require('ics');
 const { writeFileSync } = require('fs');
 var nodemailer = require('nodemailer');
 const ical = require('ical-generator');
+const bcrypt = require('bcrypt'); //for hashing passwords
+// const flash = require('express-flash');
+const passport = require('passport');
 var router = express.Router();
 router.all(cors());
 
@@ -29,7 +32,7 @@ router.all(cors());
 
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/',checkNotAuthenticated, function(req, res, next) {
   res.render('index', {page:'Home', menuId:'home'});
 });
 
@@ -47,7 +50,7 @@ router.get('/contact', function(req, res, next) {
 
 
 /* GET Time page. */
-router.get('/next', function(req, res, next) {
+router.get('/next',checkNotAuthenticated, function(req, res, next) {
   res.render('next', {page:'Second ', menuId:'second'});
 });
 
@@ -388,6 +391,87 @@ console.log(err);
   }
    
 }); 
+
+// Login and register 
+router.get("/users/login",checkAuthenticated, (req, res) => {
+  res.render("login");
+});
+
+router.get("/users/register",checkAuthenticated, (req,res) => {
+  res.render("register")
+});
+
+router.get("/users/logout", (req, res) => {
+  req.logOut();
+  req.flash('sucess_msg', "You have successfully logged out");
+  res.redirect("/users/login");
+})
+
+router.post("/users/login", 
+  passport.authenticate("local", {
+    successRedirect: '/',
+    failureRedirect: '/users/login',
+    failureFlash: false
+  })
+);
+
+router.post("/users/register", async(req,res) => {
+  let {name, email,password,cpassword} = req.body;
+
+  //form validation
+  let errors = [];
+  if(!name || !email || !password || !cpassword){
+    errors.push({ message: "Please enter all fields"})
+  }
+
+  if(password.length < 2) {
+    errors.push({message: "Password should be atleast 2 characters"});
+  } 
+
+  if(password != cpassword){
+    errors.push({message: "Passwords do not match"})
+  }
+
+  if(errors.length > 0) {
+    res.render("register",{errors:errors});
+  } else {
+    let hashedpassword = await bcrypt.hash(password, 10);
+    
+
+    const results = await db.query(`SELECT * FROM users WHERE email = $1`, [email]);
+    console.log(results.rows);
+
+    if(results.rows.length > 0){
+      errors.push({message : "Email already used!"});
+      res.render("register", {errors:errors});
+    } else {
+      const newUser = await db.query(
+        `INSERT INTO users(name, email, password, cpassword)
+        VALUES($1, $2, $3, $4)
+        `, [name, email, hashedpassword, hashedpassword]
+      )
+      console.log(newUser.rows);
+      req.flash('success_msg', "You are now registered, Please log in");
+      res.redirect("/users/login");
+    }
+  }
+})
+
+// Middlewares for redirecting authenticated/unauthenticated users
+function checkAuthenticated(req, res, next) {
+  if(req.isAuthenticated()) {
+    return res.redirect("/");
+  }
+  next();
+}
+
+function checkNotAuthenticated(req, res, next) {
+  if(req.isAuthenticated()){
+    return next();
+  }
+  res.redirect("/users/login");
+}
+
 
 
 module.exports = router;

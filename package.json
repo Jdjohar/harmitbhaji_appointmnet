@@ -2,26 +2,31 @@
   "name": "website",
   "version": "0.0.0",
   "private": true,
-  "proxy": "https://tachitools.herokuapp.com/",
+  "proxy": "http://localhost:3000",
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "nodemon ./bin/www"
   },
   "dependencies": {
-    "axios": "^0.21.0",
-    "body-parser": "~1.17.1",
+    "axios": "^0.21.1",
+    "bcrypt": "^5.0.1",
+    "body-parser": "^1.19.0",
     "cookie-parser": "~1.4.3",
     "cors": "^2.8.5",
     "debug": "~2.6.3",
     "dotenv": "^8.2.0",
     "ejs": "2.5.7",
-    "express": "~4.15.2",
+    "express": "^4.17.1",
+    "express-flash": "0.0.2",
+    "express-session": "^1.17.1",
     "file-saver": "^2.0.5",
     "helmet": "^4.2.0",
     "ical-generator": "^1.15.3",
     "ics": "^2.26.2",
     "jade": "~1.11.0",
-    "morgan": "^1.8.2",
+    "morgan": "^1.10.0",
     "nodemailer": "^6.4.17",
+    "passport": "^0.4.1",
+    "passport-local": "^1.0.0",
     "pg": "^8.5.1",
     "serve-favicon": "~2.4.2"
   }
