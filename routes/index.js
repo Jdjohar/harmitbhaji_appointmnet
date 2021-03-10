@@ -402,6 +402,10 @@ router.get("/users/register",checkAuthenticated, (req,res) => {
 });
 
 router.get("/users/logout", (req, res) => {
+  res.status(200).json({
+    status:"succes",
+    login: "Successfully!"
+  });
   req.logOut();
   req.flash('sucess_msg', "You have successfully logged out");
   res.redirect("/users/login");
