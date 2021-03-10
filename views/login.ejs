@@ -18,6 +18,13 @@
   <% if(messages.success_msg) { %>
     <li><%= messages.success_msg %></li>
   <% } %>
+
+    <ul>
+      <% if(messages.error) { %>
+        <li><%= messages.error %></li>
+      <% } %>
+    </ul>
+
   <div class="conatiner-fluid col-sm-6 ">
     <form action="/users/login" method="POST" enctype="application/x-www-form-urlencoded">
       <div class="form-group">
@@ -31,6 +38,8 @@
       </div>
       
       <button type="submit" class="btn btn-primary">Submit</button>
+      <a href="/users/register">Register</a>
+      
     </form>
     </div>
   </div>

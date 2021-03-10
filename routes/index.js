@@ -12,6 +12,7 @@ var nodemailer = require('nodemailer');
 const ical = require('ical-generator');
 const bcrypt = require('bcrypt'); //for hashing passwords
 // const flash = require('express-flash');
+const passport = require('passport');
 var router = express.Router();
 router.all(cors());
 
@@ -31,7 +32,7 @@ router.all(cors());
 
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/',checkNotAuthenticated, function(req, res, next) {
   res.render('index', {page:'Home', menuId:'home'});
 });
 
@@ -49,7 +50,7 @@ router.get('/contact', function(req, res, next) {
 
 
 /* GET Time page. */
-router.get('/next', function(req, res, next) {
+router.get('/next',checkNotAuthenticated, function(req, res, next) {
   res.render('next', {page:'Second ', menuId:'second'});
 });
 
@@ -392,22 +393,30 @@ console.log(err);
 }); 
 
 // Login and register 
-router.get("/users/login", (req, res) => {
+router.get("/users/login",checkAuthenticated, (req, res) => {
   res.render("login");
 });
 
-router.get("/users/register", (req,res) => {
+router.get("/users/register",checkAuthenticated, (req,res) => {
   res.render("register")
+});
+
+router.get("/users/logout", (req, res) => {
+  req.logOut();
+  req.flash('sucess_msg', "You have successfully logged out");
+  res.redirect("/users/login");
 })
 
-router.post("/users/login", async(req,res) => {
-  console.log(req.body);
-})
+router.post("/users/login", 
+  passport.authenticate("local", {
+    successRedirect: '/',
+    failureRedirect: '/users/login',
+    failureFlash: false
+  })
+);
 
 router.post("/users/register", async(req,res) => {
   let {name, email,password,cpassword} = req.body;
-  //console.log(name, email, password, cpassword);
-
 
   //form validation
   let errors = [];
@@ -447,6 +456,21 @@ router.post("/users/register", async(req,res) => {
     }
   }
 })
+
+// Middlewares for redirecting authenticated/unauthenticated users
+function checkAuthenticated(req, res, next) {
+  if(req.isAuthenticated()) {
+    return res.redirect("/");
+  }
+  next();
+}
+
+function checkNotAuthenticated(req, res, next) {
+  if(req.isAuthenticated()){
+    return next();
+  }
+  res.redirect("/users/login");
+}
 
 
 
