@@ -10,10 +10,7 @@ const flash = require('express-flash'); //for displaying flash messages
 var app = express();
 var index = require('./routes/index');
 var nodemailer = require('nodemailer');
-const passport = require('passport'); //for authentication
-const initializePassport = require('./passportConfig');
 
-initializePassport(passport);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -26,8 +23,6 @@ app.use(session({
 
   saveUninitialized: false
 }));
-app.use(passport.initialize());
-app.use(passport.session());
 
 app.use(flash());
 

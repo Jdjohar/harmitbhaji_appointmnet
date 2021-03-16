@@ -13,6 +13,12 @@ const ical = require('ical-generator');
 const bcrypt = require('bcrypt'); //for hashing passwords
 // const flash = require('express-flash');
 const passport = require('passport');
+const jwtGenerator = require('../utils/jwtGenerator');
+const validInfo = require('../db/middleware/validInfo');
+const authorization = require('../db/middleware/authorization');
+const { json } = require('body-parser');
+
+
 var router = express.Router();
 router.all(cors());
 
@@ -32,7 +38,7 @@ router.all(cors());
 
 
 /* GET home page. */
-router.get('/',checkNotAuthenticated, function(req, res, next) {
+router.get('/', function(req, res, next) {
   res.render('index', {page:'Home', menuId:'home'});
 });
 
@@ -50,7 +56,7 @@ router.get('/contact', function(req, res, next) {
 
 
 /* GET Time page. */
-router.get('/next',checkNotAuthenticated, function(req, res, next) {
+router.get('/next', function(req, res, next) {
   res.render('next', {page:'Second ', menuId:'second'});
 });
 
@@ -335,7 +341,7 @@ router.post("/api/v1/business/:id/services", async (req, res) => {
   try{
 
     const results = await db.query(
-      "INSERT INTO add_services( servicename, servicecost, servicetime, weektime_id,business_id) values ($1, $2, $3, $4, $5) returning *", [req.body.servicename, req.body.servicecost, req.body.servicetime, "1",  "1" ],);
+      "INSERT INTO add_services( servicename, servicecost, servicetime, weektime_id,business_id) values ($1, $2, $3, $4, $5) returning *", [req.body.servicename, req.body.servicecost, req.body.servicetime, "1", req.body.business_id ],);
     console.log(results);
 
     res.status(201).json({
@@ -352,6 +358,35 @@ router.post("/api/v1/business/:id/services", async (req, res) => {
 
 
 });
+
+//get all services
+
+router.get("/api/v1/business/:id/allservices", async (req, res) => {
+  console.log(req.params.id);
+
+  try{
+const service =  await db.query("select * from add_services where business_id= $1" , [req.params.id]);
+//console.log(results.rows[0]);
+res.status(200).json({
+  status:"succes",
+  data: {
+    service: service.rows,
+  },
+});
+}catch (err){
+    console.log(err);
+  }
+});
+
+
+
+
+
+
+
+
+
+
 
 // UPDATE A BUSINESS
 router.put("/api/v1/business/:id", async(req, res) => {
@@ -392,89 +427,172 @@ console.log(err);
    
 }); 
 
-// Login and register 
-router.get("/users/login",checkAuthenticated, (req, res) => {
-  res.render("login");
+
+
+
+// Login Auth
+// Login
+router.post('/login', validInfo, async (req, res) => {
+  try {
+      
+      // req.body
+      // const email, password;
+
+      const email = req.body['semail'];
+      const password = req.body['spassword'];
+        console.log(req.body);
+      
+      // // error if no such user
+      const user = await  db.query("SELECT * FROM users WHERE email = $1", [
+          email
+      ]);
+      if(user.rows.length === 0) {
+          return res.status(401).json("Password or Username is incorrect, please reenter.");
+      }
+
+      // password = db password?
+
+      const passwordValid = await bcrypt.compare(password, user.rows[0].password);
+      
+      if(!passwordValid) {
+          return res.status(401).json("Password or Email is Incorrect.");
+      }
+
+     console.log(passwordValid);
+
+      // provide token
+
+      const token = jwtGenerator(user.rows[0].id);
+      const name = user.rows[0].name;
+       return res.status(200).json({ name, token, status:"200", message:"User Login Successfully"});
+      
+      // const token = jwtGenerator(user.rows[0].id);
+      // const name = user.rows[0].name;
+      // const resp = res.json({ name, token});
+      // return name;
+
+  } catch (err) {
+      res.status(500).send('Server Error');
+  }
 });
 
-router.get("/users/register",checkAuthenticated, (req,res) => {
-  res.render("register")
+
+
+
+
+
+// Registration
+
+router.post('/register', validInfo, async (req, res) => {
+
+  try {
+       // Take apart req.body (name, email, pass)
+          // const { name, email, password } = req.query;
+
+          const name = req.query['name'];
+          const email = req.query['email'];
+          const password = req.query['password'];
+         
+      // Check if email already exists (if so, throw error)
+          const user = await db.query("SELECT * FROM users WHERE email = $1", [
+              email
+          ]);
+          if (user.rows.length > 0) {
+              return res.json("An account is already linked to that email!");
+            } 
+            
+
+            
+      // Bcrypt password
+            
+          const saltRound = 10;
+          const salt = await bcrypt.genSalt(saltRound);
+          
+          const bcryptPassword = await bcrypt.hash(password, salt);
+
+      // Insert details in db
+          const newUser = await db.query("INSERT INTO users(name, email, password) VALUES($1, $2, $3) RETURNING *", [
+              name, email, bcryptPassword
+          ]);
+          
+      
+      // Generate JWT 
+          const token = jwtGenerator(newUser.rows[0].id);
+          res.json({ name, token, status:"200", message:"Your account Created" });
+      
+  } catch (err) {
+      res.status(500).send('Server Error');
+  }
 });
 
-router.get("/users/logout", (req, res) => {
-  res.status(200).json({
-    status:"succes",
-    login: "Successfully!"
-  });
-  req.logOut();
-  req.flash('sucess_msg', "You have successfully logged out");
-  res.redirect("/users/login");
-})
+router.post("/verified", authorization, (req, res) => {
+  try {
+      res.json(true); 
 
-router.post("/users/login", 
-  passport.authenticate("local", {
-    successRedirect: '/',
-    failureRedirect: '/users/login',
-    failureFlash: false
-  })
-);
-
-router.post("/users/register", async(req,res) => {
-  let {name, email,password,cpassword} = req.body;
-
-  //form validation
-  let errors = [];
-  if(!name || !email || !password || !cpassword){
-    errors.push({ message: "Please enter all fields"})
+  } catch (err) {
+      res.status(500).send('Server Error');     
   }
+});
 
-  if(password.length < 2) {
-    errors.push({message: "Password should be atleast 2 characters"});
-  } 
 
-  if(password != cpassword){
-    errors.push({message: "Passwords do not match"})
-  }
 
-  if(errors.length > 0) {
-    res.render("register",{errors:errors});
-  } else {
-    let hashedpassword = await bcrypt.hash(password, 10);
+// Login Auth
+router.use("/dashboard", require("./dashbaord"));
+
+
+// Appointment api link
+router.post("/api/v1/business/:id/appointment", async (req, res) => {
+  console.log(req.body);
+  try{
+    const business_id = req.body['business_id'];
+    const m_service = req.body['m_service'];
+    const appointment_date = req.body['appointment_date'];
+    const time_slot = req.body['time_slot'];
+    const amount = req.body['amount'];
+
+
+    // Check if email already exists (if so, throw error)
+    const time = await db.query("SELECT * FROM appointment_list WHERE business_id = $1 and appointment_date = $2 and time_slot = $3", [
+      req.body.business_id, req.body.appointment_date, req.body.time_slot
+  ]);
+  console.log(req.body.time_slot);
+  console.log(business_id);
+
+  if (time.rows.length > 0) {
+      return res.status(204).json({
+        status: "204",
+        message: "This Time Slot is already Booked!"
+      });
+    } 
     
+    console.log(business_id);
+     // Insert details in db
+    const results = await db.query(
+      "INSERT INTO appointment_list(business_id, m_service, appointment_date, time_slot) values ($1, $2, $3, $4) returning *", [business_id, m_service, appointment_date, time_slot ],);
+    console.log(results);
 
-    const results = await db.query(`SELECT * FROM users WHERE email = $1`, [email]);
-    console.log(results.rows);
+    res.status(200).json({
+      status:"200",
+      message: "Appointment Successfully Booked!",
+      data: {
+        business:results.rows[0],
+      },
+    });
 
-    if(results.rows.length > 0){
-      errors.push({message : "Email already used!"});
-      res.render("register", {errors:errors});
-    } else {
-      const newUser = await db.query(
-        `INSERT INTO users(name, email, password, cpassword)
-        VALUES($1, $2, $3, $4)
-        `, [name, email, hashedpassword, hashedpassword]
-      )
-      console.log(newUser.rows);
-      req.flash('success_msg', "You are now registered, Please log in");
-      res.redirect("/users/login");
-    }
+  } catch (err) {
+    console.log(err);
+
   }
-})
 
-// Middlewares for redirecting authenticated/unauthenticated users
-function checkAuthenticated(req, res, next) {
-  if(req.isAuthenticated()) {
-    return res.redirect("/");
-  }
-  next();
-}
 
-function checkNotAuthenticated(req, res, next) {
-  if(req.isAuthenticated()){
-    return next();
-  }
-  res.redirect("/users/login");
-}
+});
+
+
+
+
+
+
+
 
 
 

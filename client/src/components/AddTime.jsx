@@ -2,14 +2,11 @@ import React, { useState } from "react"
 import WeekTime from '../apis/WeekTime'
 import ReactDOM from "react-dom";
 import { useHistory } from "react-router-dom";
+import Scheduler from 'react-scheduler-calendar'
    
 
 
 const AddTime = () => {
-
-
-
-
 
     let history = useHistory();
 
@@ -219,7 +216,9 @@ const AddTime = () => {
 {/* 
                         <button type="submit" className="btn btn-primary">Next</button>  */}
                         <button type="submit"  onClick={handleSubmit} className="btn mt-3 btn-primary">Next</button>
-                    </form>                   
+                    </form> 
+
+                      <Scheduler />                  
 
         </div>
         

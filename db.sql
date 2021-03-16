@@ -45,7 +45,7 @@ CREATE TABLE add_services (
     servicecost VARCHAR(50) NOT NULL,
     servicetime VARCHAR(50) NOT NULL,
     weektime_id BIGINT NOT NULL REFERENCES week_time(id),
-    business_id BIGINT NOT NULL REFERENCES business(id)
+    business_id BIGINT NOT NULL REFERENCES business_appoint(id)
 );
 
 
@@ -68,11 +68,22 @@ CREATE TABLE week_time (
 );
 
 -- Users Table
-CREATE TABLE uesrs (
+CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY NOT NULL,
     name VARCHAR(200) NOT NULL,
     email VARCHAR(200) NOT NULL,
     password VARCHAR(200) NOT NULL,
-    cpassword VARCHAR(200) NOT NULL,
     UNIQUE (email)
+);
+INSERT INTO users (name, email, password) VALUES ('Jashan','jdeep514@gmail.com', 'Jashan86990');
+
+
+-- appointmnet table
+CREATE TABLE appointment_list (
+     id BIGSERIAL PRIMARY KEY NOT NULL,
+     business_id BIGINT NOT NULL REFERENCES business_appoint(id),
+     m_service VARCHAR(200) NOT NULL,
+     appointment_date DATE NOT NULL,
+     time_slot VARCHAR(200) NOT NULL,
+     amount VARCHAR(200) NOT NULL
 );
