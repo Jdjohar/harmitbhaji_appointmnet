@@ -578,6 +578,7 @@ router.post("/api/v1/business/:id/appointment", async (req, res) => {
         business:results.rows[0],
       },
     });
+    
 
   } catch (err) {
     console.log(err);
