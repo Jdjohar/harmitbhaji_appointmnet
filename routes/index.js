@@ -280,7 +280,7 @@ res.status(200).json({
 router.post("/api/v1/business", async (req, res, next) => {
   console.log(req.body);
   try{
-    const results = await db.query("INSERT INTO business_appoint(business_name, business_email, country, city, province, phonenumber) values ($1, $2, $3, $4, $5, $6) returning *", [req.body.business_name,req.body.business_email, req.body.country, req.body.city, req.body.province,req.body.phonenumber] );
+    const results = await db.query("INSERT INTO business_appoint(business_name, business_email, country, city, province, phonenumber) values ($1, $2, $3, $4, $5, $6) returning id", [req.body.business_name,req.body.business_email, req.body.country, req.body.city, req.body.province,req.body.phonenumber] );
     console.log(results);
 
     res.status(201).json({
@@ -307,8 +307,8 @@ router.post("/api/v1/business/:id/time", async (req, res) => {
   try{
 
     const results = await db.query(
-      "INSERT INTO week_time( business_id, start_time, end_time, day_name) values ($1, $2, $3, $4) returning *", 
-      [req.body.business_id, req.body.start_time, req.body.end_time, "Monday" ],);
+      "INSERT INTO week_time( business_id, start_time, end_time) values ($1, $2, $3) returning *", 
+      [req.body.id, req.body.start_time, req.body.end_time],);
     console.log(results);
 
     res.status(201).json({
@@ -322,7 +322,6 @@ router.post("/api/v1/business/:id/time", async (req, res) => {
     console.log(err);
 
   }
-
 
 });
 
@@ -330,26 +329,22 @@ router.post("/api/v1/business/:id/time", async (req, res) => {
 
 // add Services
 router.post("/api/v1/business/:id/services", async (req, res) => {
-  console.log(req.body);
-
+  //console.log(req.body);
+  const {inputList} = req.body;
+  const {id} = req.body;
   try{
-
-    const results = await db.query(
-      "INSERT INTO add_services( servicename, servicecost, servicetime, weektime_id,business_id) values ($1, $2, $3, $4, $5) returning *", [req.body.servicename, req.body.servicecost, req.body.servicetime, "1",  "1" ],);
+  inputList.forEach(async (service) => {
+    let results = await db.query(`INSERT INTO add_services(servicename, servicecost, servicetime, business_id) VALUES($1, $2, $3, $4)`,[service.serviceName, service.serviceCost, service.serviceTime, id]);
     console.log(results);
 
     res.status(201).json({
-      status:"succes",
-      data: {
-        business:results.rows[0],
-      },
-    });
-
-  } catch (err) {
+      status: "success",
+      
+    })
+  });
+  } catch(err){
     console.log(err);
-
   }
-
 
 });
 
@@ -392,7 +387,7 @@ console.log(err);
    
 }); 
 
-// Login and register 
+// Login and register (currently unused)
 router.get("/users/login",checkAuthenticated, (req, res) => {
   res.render("login");
 });
@@ -405,36 +400,56 @@ router.get("/users/logout", (req, res) => {
   req.logOut();
   req.flash('sucess_msg', "You have successfully logged out");
   res.redirect("/users/login");
+});
+
+
+
+//Login with Google or Facebook
+router.post("/api/v1/business/social-login", async(req,res)=> {
+  console.log("req: ",req);
+  const name = req.body.name;
+  const email = req.body.email;
+  // const googleId = req.body.googleId;
+
+  const googleUser = await db.query(`SELECT * FROM users WHERE email = $1`, [email]);
+  if(googleUser.rows.length > 0){
+    res.status(200).json({
+      status: "success",
+      redirect: "/"
+    })
+  } else {
+    var newUser = await db.query(`INSERT INTO users(name, email) VALUES($1, $2)`, [name, email]);
+    res.status(200).json({
+      status: "success",
+      redirect: "/"
+    })
+  }
 })
 
-router.post("/users/login", 
-  passport.authenticate("local", {
-    successRedirect: '/',
-    failureRedirect: '/users/login',
-    failureFlash: false
-  })
+// Normal login
+router.post("/api/v1/business/login",function(req,res,next){
+  passport.authenticate("local", function(err, user, info) {
+    if(err) {
+      return next(err);
+    }
+    if(!user) {
+      return res.status(401).json({
+        status: "failure",
+        redirect: "/login"
+      });
+    }
+    return res.status(200).json({
+      status: "success",
+      data: user,
+      redirect: "/"
+    });
+  })(req, res, next);
+}
 );
 
-router.post("/users/register", async(req,res) => {
-  let {name, email,password,cpassword} = req.body;
+router.post("/api/v1/business/register", async(req,res) => {
+    let {name, email,password,cpassword} = req.body;
 
-  //form validation
-  let errors = [];
-  if(!name || !email || !password || !cpassword){
-    errors.push({ message: "Please enter all fields"})
-  }
-
-  if(password.length < 2) {
-    errors.push({message: "Password should be atleast 2 characters"});
-  } 
-
-  if(password != cpassword){
-    errors.push({message: "Passwords do not match"})
-  }
-
-  if(errors.length > 0) {
-    res.render("register",{errors:errors});
-  } else {
     let hashedpassword = await bcrypt.hash(password, 10);
     
 
@@ -442,19 +457,23 @@ router.post("/users/register", async(req,res) => {
     console.log(results.rows);
 
     if(results.rows.length > 0){
-      errors.push({message : "Email already used!"});
-      res.render("register", {errors:errors});
+      res.json({
+        status: "failure",
+        data: results.rows[0]
+      })
     } else {
       const newUser = await db.query(
         `INSERT INTO users(name, email, password, cpassword)
         VALUES($1, $2, $3, $4)
         `, [name, email, hashedpassword, hashedpassword]
       )
-      console.log(newUser.rows);
-      req.flash('success_msg', "You are now registered, Please log in");
-      res.redirect("/users/login");
+      res.status(200).json({
+        status: "success",
+        data: newUser.rows,
+        redirect: "/api/v1/business/login"
+      });
     }
-  }
+  
 })
 
 // Middlewares for redirecting authenticated/unauthenticated users

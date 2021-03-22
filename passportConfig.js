@@ -1,6 +1,8 @@
 const LocalStrategy = require("passport-local").Strategy;
 const db = require("./db");
 const bcrypt = require("bcrypt");
+const passportCustom = require('passport-custom');
+const CustomStrategy = passportCustom.Strategy;
 
 function initialize(passport) {
 
@@ -42,7 +44,26 @@ function initialize(passport) {
     )
   )
 
-  passport.serializeUser((user, done) => done(null, user.id));
+
+    
+  passport.use("social", new CustomStrategy(
+    function(req, done) {
+      console.log("req: ",req);
+      done(null, user);
+      // User.findOne({
+      //   username: req.body.username
+      // }, function (err, user) {
+      //   done(err, user);
+      // });
+    }
+  ));
+
+
+
+  passport.serializeUser((user, done) => {
+    console.log("user: ",user);
+    done(null, user.rows[0].id)
+  });
 
   passport.deserializeUser(async(id, done) => {
     const results = await db.query(
