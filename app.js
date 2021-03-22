@@ -40,8 +40,6 @@ app.use(bodyParser.urlencoded({
 app.use(bodyParser.json());
 
 
-
-
 // set path for static assets
 app.use(express.static(path.join(__dirname, 'public')));
 
