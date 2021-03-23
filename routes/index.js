@@ -587,14 +587,4 @@ router.post("/api/v1/business/:id/appointment", async (req, res) => {
 
 
 });
-
-
-
-
-
-
-
-
-
-
 module.exports = router;
