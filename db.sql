@@ -44,11 +44,8 @@ CREATE TABLE add_services (
     servicename VARCHAR(50) NOT NULL,
     servicecost VARCHAR(50) NOT NULL,
     servicetime VARCHAR(50) NOT NULL,
-    weektime_id BIGINT NOT NULL REFERENCES week_time(id),
-    business_id BIGINT NOT NULL REFERENCES business_appoint(id)
+    business_id BIGINT NOT NULL
 );
-
-
 
 CREATE TABLE business (
     id BIGSERIAL NOT NULL PRIMARY KEY,
@@ -64,7 +61,7 @@ CREATE TABLE week_time (
     business_id BIGINT NOT NULL REFERENCES business_appoint(id),
     start_time TIME NOT NULL,
     end_time TIME NOT NULL ,
-    day_name  VARCHAR(50) NOT NULL
+    day_name  VARCHAR(50) NULL
 );
 
 -- Users Table
@@ -87,3 +84,5 @@ CREATE TABLE appointment_list (
      time_slot VARCHAR(200) NOT NULL,
      amount VARCHAR(200) NOT NULL
 );
+
+UPDATE users SET email = jdeep5141@gmail.com WHERE id = 1;

@@ -308,19 +308,22 @@ router.post("/api/v1/business", async (req, res, next) => {
 
 // add time days
 router.post("/api/v1/business/:id/time", async (req, res) => {
-  console.log(req.body);
+  console.log(req.body, "Hello body");
+  console.log(req.body.id, "Hello id");
 
   try{
 
     const results = await db.query(
-      "INSERT INTO week_time( business_id, start_time, end_time, day_name) values ($1, $2, $3, $4) returning *", 
-      [req.body.business_id, req.body.start_time, req.body.end_time, "Monday" ],);
+      "INSERT INTO week_time( business_id, start_time, end_time) values ($1, $2, $3) returning *", 
+      [req.body.id, req.body.start_time, req.body.end_time],);
     console.log(results);
+    console.log(results.rows.business_id);
+
 
     res.status(201).json({
       status:"succes",
       data: {
-        business:results.rows[0],
+        business:results.rows[0].business_id,
       },
     });
 
@@ -329,35 +332,60 @@ router.post("/api/v1/business/:id/time", async (req, res) => {
 
   }
 
-
 });
 
-
-
-// add Services
+// add Services - Ritwik
 router.post("/api/v1/business/:id/services", async (req, res) => {
-  console.log(req.body);
-
+  //console.log(req.body);
+  const {inputList} = req.body;
+  const {id} = req.body;
   try{
-
-    const results = await db.query(
-      "INSERT INTO add_services( servicename, servicecost, servicetime, weektime_id,business_id) values ($1, $2, $3, $4, $5) returning *", [req.body.servicename, req.body.servicecost, req.body.servicetime, "1", req.body.business_id ],);
+  inputList.forEach(async (service) => {
+    let results = await db.query(`INSERT INTO add_services(servicename, servicecost, servicetime, business_id) VALUES($1, $2, $3, $4)`,[service.serviceName, service.serviceCost, service.serviceTime, id]);
     console.log(results);
 
     res.status(201).json({
-      status:"succes",
-      data: {
-        business:results.rows[0],
-      },
-    });
-
-  } catch (err) {
+      status: "success",
+      
+    })
+  });
+  } catch(err){
     console.log(err);
-
   }
 
-
 });
+
+
+
+
+
+
+
+
+// // add Services -  Jashan
+// router.post("/api/v1/business/:id/services", async (req, res) => {
+//   console.log(req.body);
+
+//   try{
+
+//     const results = await db.query(
+//       "INSERT INTO add_services( servicename, servicecost, servicetime, business_id) values ($1, $2, $3, $4) returning *", [req.body.servicename, req.body.servicecost, req.body.servicetime, req.body.business_id ],);
+//     console.log(results);
+
+//     res.status(201).json({
+//       status:"succes",
+//       data: {
+//         business:results.rows[0],
+//       },
+//     });
+
+//   } catch (err) {
+//     console.log(err);
+
+//   }
+
+
+// });
 
 //get all services
 
@@ -480,111 +508,109 @@ router.post('/login', validInfo, async (req, res) => {
 
 
 
-
-// Registration
-
-router.post('/register', validInfo, async (req, res) => {
-
-  try {
-       // Take apart req.body (name, email, pass)
-          // const { name, email, password } = req.query;
-
-          const name = req.query['name'];
-          const email = req.query['email'];
-          const password = req.query['password'];
-         
-      // Check if email already exists (if so, throw error)
-          const user = await db.query("SELECT * FROM users WHERE email = $1", [
-              email
-          ]);
-          if (user.rows.length > 0) {
-              return res.json("An account is already linked to that email!");
-            } 
-            
-
-            
-      // Bcrypt password
-            
-          const saltRound = 10;
-          const salt = await bcrypt.genSalt(saltRound);
-          
-          const bcryptPassword = await bcrypt.hash(password, salt);
-
-      // Insert details in db
-          const newUser = await db.query("INSERT INTO users(name, email, password) VALUES($1, $2, $3) RETURNING *", [
-              name, email, bcryptPassword
-          ]);
-          
-      
-      // Generate JWT 
-          const token = jwtGenerator(newUser.rows[0].id);
-          res.json({ name, token, status:"200", message:"Your account Created" });
-      
-  } catch (err) {
-      res.status(500).send('Server Error');
-  }
+// Login and register (currently unused)
+router.get("/users/login",checkAuthenticated, (req, res) => {
+  res.render("login");
 });
 
-router.post("/verified", authorization, (req, res) => {
-  try {
-      res.json(true); 
+router.get("/users/register",checkAuthenticated, (req,res) => {
+  res.render("register")
+});
 
-  } catch (err) {
-      res.status(500).send('Server Error');     
-  }
+router.get("/users/logout", (req, res) => {
+  req.logOut();
+  req.flash('sucess_msg', "You have successfully logged out");
+  res.redirect("/users/login");
 });
 
 
 
-// Login Auth
-router.use("/dashboard", require("./dashbaord"));
+//Login with Google or Facebook
+router.post("/api/v1/business/social-login", async(req,res)=> {
+  console.log("req: ",req);
+  const name = req.body.name;
+  const email = req.body.email;
+  // const googleId = req.body.googleId;
 
-
-// Appointment api link
-router.post("/api/v1/business/:id/appointment", async (req, res) => {
-  console.log(req.body);
-  try{
-    const business_id = req.body['business_id'];
-    const m_service = req.body['m_service'];
-    const appointment_date = req.body['appointment_date'];
-    const time_slot = req.body['time_slot'];
-    const amount = req.body['amount'];
-
-
-    // Check if email already exists (if so, throw error)
-    const time = await db.query("SELECT * FROM appointment_list WHERE business_id = $1 and appointment_date = $2 and time_slot = $3", [
-      req.body.business_id, req.body.appointment_date, req.body.time_slot
-  ]);
-  console.log(req.body.time_slot);
-  console.log(business_id);
-
-  if (time.rows.length > 0) {
-      return res.status(204).json({
-        status: "204",
-        message: "This Time Slot is already Booked!"
-      });
-    } 
-    
-    console.log(business_id);
-     // Insert details in db
-    const results = await db.query(
-      "INSERT INTO appointment_list(business_id, m_service, appointment_date, time_slot) values ($1, $2, $3, $4) returning *", [business_id, m_service, appointment_date, time_slot ],);
-    console.log(results);
-
+  const googleUser = await db.query(`SELECT * FROM users WHERE email = $1`, [email]);
+  if(googleUser.rows.length > 0){
     res.status(200).json({
-      status:"200",
-      message: "Appointment Successfully Booked!",
-      data: {
-        business:results.rows[0],
-      },
+      status: "success",
+      redirect: "/"
+    })
+  } else {
+    var newUser = await db.query(`INSERT INTO users(name, email) VALUES($1, $2)`, [name, email]);
+    res.status(200).json({
+      status: "success",
+      redirect: "/"
+    })
+  }
+})
+
+// Normal login
+router.post("/api/v1/business/login",function(req,res,next){
+  passport.authenticate("local", function(err, user, info) {
+    if(err) {
+      return next(err);
+    }
+    if(!user) {
+      return res.status(401).json({
+        status: "failure",
+        redirect: "/login"
+      });
+    }
+    return res.status(200).json({
+      status: "success",
+      data: user,
+      redirect: "/"
     });
+  })(req, res, next);
+}
+);
+
+router.post("/api/v1/business/register", async(req,res) => {
+    let {name, email,password,cpassword} = req.body;
+
+    let hashedpassword = await bcrypt.hash(password, 10);
     
 
-  } catch (err) {
-    console.log(err);
+    const results = await db.query(`SELECT * FROM users WHERE email = $1`, [email]);
+    console.log(results.rows);
 
+    if(results.rows.length > 0){
+      res.json({
+        status: "failure",
+        data: results.rows[0]
+      })
+    } else {
+      const newUser = await db.query(
+        `INSERT INTO users(name, email, password, cpassword)
+        VALUES($1, $2, $3, $4)
+        `, [name, email, hashedpassword, hashedpassword]
+      )
+      res.status(200).json({
+        status: "success",
+        data: newUser.rows,
+        redirect: "/api/v1/business/login"
+      });
+    }
+  
+})
+
+// Middlewares for redirecting authenticated/unauthenticated users
+function checkAuthenticated(req, res, next) {
+  if(req.isAuthenticated()) {
+    return res.redirect("/");
   }
+  next();
+}
+
+function checkNotAuthenticated(req, res, next) {
+  if(req.isAuthenticated()){
+    return next();
+  }
+  res.redirect("/users/login");
+}
 
 
-});
 module.exports = router;
