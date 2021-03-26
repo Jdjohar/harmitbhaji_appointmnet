@@ -490,9 +490,10 @@ router.post('/login', validInfo, async (req, res) => {
 
       // provide token
 
+      const user1_id = user.rows[0].id;
       const token = jwtGenerator(user.rows[0].id);
       const name = user.rows[0].name;
-       return res.status(200).json({ name, token, status:"200", message:"User Login Successfully"});
+       return res.status(200).json({ name, token, user1_id, status:"200", message:"User Login Successfully"});
       
       // const token = jwtGenerator(user.rows[0].id);
       // const name = user.rows[0].name;
@@ -611,6 +612,168 @@ function checkNotAuthenticated(req, res, next) {
   }
   res.redirect("/users/login");
 }
+
+
+
+// ==========================================================
+// =============================================================
+// =============================================================
+// =============================================================
+
+// embed code login and path - Jashan
+
+
+
+
+// // Login Auth
+// router.post('/embedcode/login', validInfo, async (req, res) => {
+//   try {
+//       // req.body
+//       // const email, password;
+
+//       const email = req.body['semail'];
+//       const password = req.body['spassword'];
+//       console.log(req.body);
+      
+//       // // error if no such user
+//       const user = await  db.query("SELECT * FROM users WHERE email = $1", [
+//           email
+//       ]);
+//       if(user.rows.length === 0) {
+//           return res.status(401).json("Password or Username is incorrect, please reenter.");
+//       }
+
+//       // password = db password?
+//       const passwordValid = await bcrypt.compare(password, user.rows[0].password);
+//       if(!passwordValid) {
+//           return res.status(401).json("Password or Email is Incorrect.");
+//       }
+
+//      console.log(passwordValid);
+
+//       // provide token
+//       const token = jwtGenerator(user.rows[0].id , "Id Number");
+//       const name = user.rows[0].name;
+//       var id = user.rows[0].id;
+//       const business = await db.query("SELECT * FROM business_appoint WHERE user_id = $1", [id]);
+//       const b_id = business.rows[0].id;
+//       const embedcode = await db.query("INSERT INTO componenttable (business_id, embedcode1,embedcode2,embedcode3) values ($1,$2,$3,$4) returning *",
+//         [b_id , "TRUE", "False", "False"]);
+//        return res.status(200).json({ name, token,b_id, status:"200", message:"User Login Successfully"});
+
+
+//   } catch (err) {
+//       res.status(500).send('Server Error');
+//   }
+// });
+
+
+
+
+
+
+
+
+
+
+// Appointment api link
+router.post("/api/v1/business/:id/appointment", async (req, res) => {
+  try{
+    const business_id = req.body.id;
+    const m_service = req.body['m_service'];
+    const appointment_date = req.body['appointment_date'];
+    const time_slot = req.body['time_slot'];
+    console.log('test');
+
+    
+    // Check if Time Slot already exists (if so, throw error)
+    const time = await db.query("SELECT * FROM appointment_list WHERE business_id = $1 and appointment_date = $2 and time_slot = $3", 
+    [business_id, appointment_date,time_slot]);
+    
+  if (time.rows.length > 0) {
+      return res.status(204).json({
+        status: "204",
+        message: "This Time Slot is already Booked!"
+      });
+    } 
+    
+
+  console.log("Time Slot: ",time_slot);
+  console.log('Business ID: ', business_id);
+  console.log('Date: ', appointment_date);
+  console.log('m_service: ', m_service);
+
+    
+    console.log("Business Id 2 :",business_id);
+     // Insert details in db
+    const results = await db.query(
+      "INSERT INTO appointment_list(business_id, m_service, appointment_date, time_slot) values ($1, $2, $3, $4) returning *", ["7", m_service, appointment_date, time_slot ]);
+    // console.log("Results",results);
+
+    res.status(200).json({
+      status:"200",
+      message: "Appointment Successfully Booked!",
+      data: {
+        business:results.rows[0],
+      },
+    });
+
+
+  } catch (err) {
+    console.log(err);
+
+  }
+
+
+});
+
+
+
+
+
+
+
+
+// disable dates 
+router.get("/api/v1/business/:id/appointment", async (req, res) => {
+  try{
+
+    const business_id = "7";
+
+    // Check if Time Slot already exists (if so, throw error)
+    // Select appointment_date WHERE business_id = $1 * FROM appointment_list
+    // const fetchDate = await db.query("SELECT * FROM appointment_list WHERE business_id = $1 and appointment_date = $2", 
+    const fetchDate = await db.query("SELECT appointment_date from appointment_list WHERE business_id = $1", 
+    [business_id]);
+    console.log(fetchDate.rows);
+
+    res.status(200).json({
+      status:"succes",
+      data: {
+        fetchDate: fetchDate.rows
+      },
+    });
+
+  }catch(err) {
+    console.log(err)
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 module.exports = router;
