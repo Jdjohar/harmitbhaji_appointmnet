@@ -668,14 +668,6 @@ function checkNotAuthenticated(req, res, next) {
 // });
 
 
-
-
-
-
-
-
-
-
 // Appointment api link
 router.post("/api/v1/business/appointment/:id", async (req, res) => {
   try{
