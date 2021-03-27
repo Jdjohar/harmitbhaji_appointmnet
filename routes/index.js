@@ -677,18 +677,18 @@ function checkNotAuthenticated(req, res, next) {
 
 
 // Appointment api link
-router.post("/api/v1/business/:id/appointment", async (req, res) => {
+router.post("/api/v1/business/appointment/:id", async (req, res) => {
   try{
-    const business_id = req.body.id;
+    const business_id = 1;
     const m_service = req.body['m_service'];
     const appointment_date = req.body['appointment_date'];
     const time_slot = req.body['time_slot'];
     console.log('test');
 
-    
     // Check if Time Slot already exists (if so, throw error)
     const time = await db.query("SELECT * FROM appointment_list WHERE business_id = $1 and appointment_date = $2 and time_slot = $3", 
     [business_id, appointment_date,time_slot]);
+      
     
   if (time.rows.length > 0) {
       return res.status(204).json({
@@ -707,7 +707,7 @@ router.post("/api/v1/business/:id/appointment", async (req, res) => {
     console.log("Business Id 2 :",business_id);
      // Insert details in db
     const results = await db.query(
-      "INSERT INTO appointment_list(business_id, m_service, appointment_date, time_slot) values ($1, $2, $3, $4) returning *", ["7", m_service, appointment_date, time_slot ]);
+      "INSERT INTO appointment_list(business_id, m_service, appointment_date, time_slot) values ($1, $2, $3, $4) returning *", [business_id, m_service, appointment_date, time_slot ]);
     // console.log("Results",results);
 
     res.status(200).json({
