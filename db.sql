@@ -44,10 +44,8 @@ CREATE TABLE add_services (
     servicename VARCHAR(50) NOT NULL,
     servicecost VARCHAR(50) NOT NULL,
     servicetime VARCHAR(50) NOT NULL,
-    business_id BIGINT NOT NULL REFERENCES business(id)
+    business_id BIGINT NOT NULL
 );
-
-
 
 CREATE TABLE business (
     id BIGSERIAL NOT NULL PRIMARY KEY,
@@ -67,7 +65,7 @@ CREATE TABLE week_time (
 );
 
 -- Users Table
-CREATE TABLE uesrs (
+CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY NOT NULL,
     name VARCHAR(200) NOT NULL,
     email VARCHAR(200) NOT NULL,
@@ -75,3 +73,17 @@ CREATE TABLE uesrs (
     cpassword VARCHAR(200), 
     UNIQUE (email)
 );
+INSERT INTO users (name, email, password) VALUES ('Jashan','jdeep514@gmail.com', 'Jashan86990');
+
+
+-- appointmnet table
+CREATE TABLE appointment_list (
+     id BIGSERIAL PRIMARY KEY NOT NULL,
+     business_id BIGINT NOT NULL REFERENCES business_appoint(id),
+     m_service VARCHAR(200) NOT NULL,
+     appointment_date DATE NOT NULL,
+     time_slot VARCHAR(200) NOT NULL,
+     amount VARCHAR(200) NOT NULL
+);
+
+UPDATE users SET email = jdeep5141@gmail.com WHERE id = 1;

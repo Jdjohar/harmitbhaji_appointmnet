@@ -15,6 +15,7 @@ const initializePassport = require('./passportConfig');
 
 initializePassport(passport);
 
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
@@ -26,6 +27,7 @@ app.use(session({
 
   saveUninitialized: false
 }));
+
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -61,8 +63,6 @@ app.use(function(err, req, res, next) {
   res.render('error', {status:err.status, message:err.message});
 });
 
-
-// mailer
 
 
 
