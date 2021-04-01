@@ -528,7 +528,7 @@ router.get("/users/logout", (req, res) => {
 
 //Login with Google or Facebook
 router.post("/api/v1/business/social-login", async(req,res)=> {
-  console.log("req: ",req);
+  //console.log("req: ",req);
   const name = req.body.name;
   const email = req.body.email;
   // const googleId = req.body.googleId;
@@ -671,15 +671,17 @@ function checkNotAuthenticated(req, res, next) {
 // Appointment api link
 router.post("/api/v1/business/appointment/:id", async (req, res) => {
   try{
-    const business_id = 1;
+    // console.log("id", req.params)
+    const business_id = 8;
     const m_service = req.body['m_service'];
     const appointment_date = req.body['appointment_date'];
-    const time_slot = req.body['time_slot'];
+    const start_time = req.body['start_time'];
+    const end_time = req.body['end_time']
     console.log('test');
 
     // Check if Time Slot already exists (if so, throw error)
-    const time = await db.query("SELECT * FROM appointment_list WHERE business_id = $1 and appointment_date = $2 and time_slot = $3", 
-    [business_id, appointment_date,time_slot]);
+    const time = await db.query("SELECT * FROM appointment_list WHERE business_id = $1 and appointment_date = $2 and start_time = $3 and end_time = $4", 
+    [business_id, appointment_date, start_time, end_time]);
       
     
   if (time.rows.length > 0) {
@@ -690,17 +692,17 @@ router.post("/api/v1/business/appointment/:id", async (req, res) => {
     } 
     
 
-  console.log("Time Slot: ",time_slot);
-  console.log('Business ID: ', business_id);
-  console.log('Date: ', appointment_date);
-  console.log('m_service: ', m_service);
+  // console.log("Time Slot: ",time_slot);
+  // console.log('Business ID: ', business_id);
+  // console.log('Date: ', appointment_date);
+  // console.log('m_service: ', m_service);
 
     
     console.log("Business Id 2 :",business_id);
      // Insert details in db
     const results = await db.query(
-      "INSERT INTO appointment_list(business_id, m_service, appointment_date, time_slot) values ($1, $2, $3, $4) returning *", [business_id, m_service, appointment_date, time_slot ]);
-    // console.log("Results",results);
+      "INSERT INTO appointment_list(business_id, m_service, appointment_date, start_time, end_time) values ($1, $2, $3, $4, $5) returning *", [business_id, m_service, appointment_date, start_time, end_time ]);
+    console.log("Results",results.rows[0]);
 
     res.status(200).json({
       status:"200",
@@ -710,7 +712,6 @@ router.post("/api/v1/business/appointment/:id", async (req, res) => {
       },
     });
 
-
   } catch (err) {
     console.log(err);
 
@@ -718,7 +719,6 @@ router.post("/api/v1/business/appointment/:id", async (req, res) => {
 
 
 });
-
 
 
 
