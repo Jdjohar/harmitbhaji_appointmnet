@@ -82,8 +82,7 @@ CREATE TABLE appointment_list (
      business_id BIGINT NOT NULL REFERENCES business_appoint(id),
      m_service VARCHAR(200) NOT NULL,
      appointment_date DATE NOT NULL,
-     start_time TIME NOT NULL,  -- Modified table here: time_slot replaced with start_time and end_time
-     end_time TIME NOT NULL
+     time_slot VARCHAR(50) NOT NULL  -- changed data type of time_slot to VARCHAR
 );
 
 UPDATE users SET email = jdeep5141@gmail.com WHERE id = 1;
