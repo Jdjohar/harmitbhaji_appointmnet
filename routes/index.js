@@ -528,7 +528,7 @@ router.get("/users/logout", (req, res) => {
 
 //Login with Google or Facebook
 router.post("/api/v1/business/social-login", async(req,res)=> {
-  console.log("req: ",req);
+  //console.log("req: ",req);
   const name = req.body.name;
   const email = req.body.email;
   // const googleId = req.body.googleId;
@@ -671,7 +671,8 @@ function checkNotAuthenticated(req, res, next) {
 // Appointment api link
 router.post("/api/v1/business/appointment/:id", async (req, res) => {
   try{
-    const business_id = 1;
+    // console.log("id", req.params)
+    const business_id = 8;
     const m_service = req.body['m_service'];
     const appointment_date = req.body['appointment_date'];
     const time_slot = req.body['time_slot'];
@@ -679,7 +680,7 @@ router.post("/api/v1/business/appointment/:id", async (req, res) => {
 
     // Check if Time Slot already exists (if so, throw error)
     const time = await db.query("SELECT * FROM appointment_list WHERE business_id = $1 and appointment_date = $2 and time_slot = $3", 
-    [business_id, appointment_date,time_slot]);
+    [business_id, appointment_date, time_slot]);
       
     
   if (time.rows.length > 0) {
@@ -690,17 +691,17 @@ router.post("/api/v1/business/appointment/:id", async (req, res) => {
     } 
     
 
-  console.log("Time Slot: ",time_slot);
-  console.log('Business ID: ', business_id);
-  console.log('Date: ', appointment_date);
-  console.log('m_service: ', m_service);
+  // console.log("Time Slot: ",time_slot);
+  // console.log('Business ID: ', business_id);
+  // console.log('Date: ', appointment_date);
+  // console.log('m_service: ', m_service);
 
     
     console.log("Business Id 2 :",business_id);
      // Insert details in db
     const results = await db.query(
       "INSERT INTO appointment_list(business_id, m_service, appointment_date, time_slot) values ($1, $2, $3, $4) returning *", [business_id, m_service, appointment_date, time_slot ]);
-    // console.log("Results",results);
+    console.log("Results",results.rows[0]);
 
     res.status(200).json({
       status:"200",
@@ -709,7 +710,6 @@ router.post("/api/v1/business/appointment/:id", async (req, res) => {
         business:results.rows[0],
       },
     });
-
 
   } catch (err) {
     console.log(err);
@@ -725,12 +725,11 @@ router.post("/api/v1/business/appointment/:id", async (req, res) => {
 
 
 
-
 // disable dates 
 router.get("/api/v1/business/:id/appointment", async (req, res) => {
   try{
 
-    const business_id = "7";
+    const business_id = "8";
 
     // Check if Time Slot already exists (if so, throw error)
     // Select appointment_date WHERE business_id = $1 * FROM appointment_list
