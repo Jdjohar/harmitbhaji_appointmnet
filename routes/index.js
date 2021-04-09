@@ -72,58 +72,58 @@ console.log("jashan");
 });
 
 // using this route .ics file send to user email.
-router.get("/send",  (req, res) => {
-  res.render('send', {page:'send ', menuId:'second'});
+// router.get("/send",  (req, res) => {
+//   res.render('send', {page:'send ', menuId:'second'});
 
-  const output = ` 
+//   const output = ` 
   
-  <p>Your ICS file here</p>
-  <a href="www.jdwebservices.com/test.ics">ICS file</a>
-  `;
+//   <p>Your ICS file here</p>
+//   <a href="www.jdwebservices.com/test.ics">ICS file</a>
+//   `;
 
   
-var transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'deepfilm12@gmail.com',
-    pass: 'Jashan86990'
-  }
-});
+// var transporter = nodemailer.createTransport({
+//   service: 'gmail',
+//   auth: {
+//     user: 'deepfilm12@gmail.com',
+//     pass: 'Jashan86990'
+//   }
+// });
 
-var mailOptions = {
-  from: 'deepfilm12@gmail.com',
-  to: 'jdeep514@gmail.com',
-  subject: 'Merchant Name - Confirmation Email',
-  text: 'That was easy!',
-  html: output
-};
+// var mailOptions = {
+//   from: 'deepfilm12@gmail.com',
+//   to: 'jdeep514@gmail.com',
+//   subject: 'Merchant Name - Confirmation Email',
+//   text: 'That was easy!',
+//   html: output
+// };
 
-transporter.sendMail(mailOptions, function(error, info){
-  if (error) {
-    console.log(error);
-  } else {
-    console.log('Email sent: ' + info.response);
-  }
-});
+// transporter.sendMail(mailOptions, function(error, info){
+//   if (error) {
+//     console.log(error);
+//   } else {
+//     console.log('Email sent: ' + info.response);
+//   }
+// });
   
-  });
+//   });
 
 router.get("/icsexport",  (req, res) => {
   axios.get("http://localhost:3000/api/v1/business/1")
   .then((response)=>
     {
       console.log(response.data.data);      
-      console.log(response.data.data.time[0].day_name);      
+      // console.log(response.data.data.time[0].day_name);      
       console.log(response.data.data.business.phonenumber);      
       console.log(response.data.data.service[0].servicename);      
 
       const business_name = response.data.data.business.business_name;
-      const day = response.data.data.time[0].day_name;
+      // const day = response.data.data.time[0].day_name;
       const phonenumber = response.data.data.business.phonenumber;
       const service = response.data.data.service[0].servicename;
       
-      res.render('icsexport', {
-        business_name, day, phonenumber, service
+      res.render('/icsexport', {
+        business_name, phonenumber, service
       });
 
 
@@ -134,7 +134,7 @@ router.get("/icsexport",  (req, res) => {
         service: "Gmail",
         auth: {
             user: "deepfilm12@gmail.com",
-            pass: "Jashan86990"
+            pass: "Jashan@123@"
         }
      });
 
@@ -166,11 +166,11 @@ router.get("/icsexport",  (req, res) => {
      }
 
 
-    let content = contentdetail("This is an email confiramtion for the following appointment:", "This is summary", business_name, day, phonenumber, service)
+    let content = contentdetail("This is an email confiramtion for the following appointment:", "This is summary", business_name, phonenumber, service)
 
      var mailOptions = {
        from: "deepfilm12@gmail.com",
-       to: "hkamboe@gmail.com",
+       to: "jdeep514@gmail.com",
        subject: "Merchant Name - Confirmation Email",
        //html: "<h1>Welcome to my website</h1>",
        icalEvent: {
@@ -259,11 +259,11 @@ router.get("/api/v1/business/:id", async (req, res) => {
   console.log(req.params.id);
 
   try{
-const business = await db.query("select * from business where id = $1", [req.params.id]);
+const business = await db.query("select * from business_appoint where id = $1", [req.params.id]);
 const time =  await db.query("select * from week_time where id= $1" , [
   req.params.id,
 ]);
-const service =  await db.query("select * from add_services where business_id= $1 and weektime_id=$2" , [
+const service =  await db.query("select * from add_services where business_id= $1 and id=$2" , [
   req.params.id, req.params.id
 ]);
 //console.log(results.rows[0]);
