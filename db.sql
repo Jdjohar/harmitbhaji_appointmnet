@@ -61,7 +61,7 @@ CREATE TABLE week_time (
     business_id BIGINT NULL REFERENCES business_appoint(id),
     start_time TIME NOT NULL,
     end_time TIME NOT NULL ,
-    day_name  VARCHAR(50) NULL
+    day_name  VARCHAR(50) 
 );
 
 -- Users Table
@@ -69,7 +69,8 @@ CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY NOT NULL,
     name VARCHAR(200) NOT NULL,
     email VARCHAR(200) NOT NULL,
-    password VARCHAR(200) NOT NULL,
+    password VARCHAR(200),
+    cpassword VARCHAR(200), 
     UNIQUE (email)
 );
 INSERT INTO users (name, email, password) VALUES ('Jashan','jdeep514@gmail.com', 'Jashan86990');
@@ -81,8 +82,7 @@ CREATE TABLE appointment_list (
      business_id BIGINT NOT NULL REFERENCES business_appoint(id),
      m_service VARCHAR(200) NOT NULL,
      appointment_date DATE NOT NULL,
-     time_slot VARCHAR(200) NOT NULL,
-     amount VARCHAR(200) NOT NULL
+     time_slot VARCHAR(50) NOT NULL  -- changed data type of time_slot to VARCHAR
 );
 
 UPDATE users SET email = jdeep5141@gmail.com WHERE id = 1;

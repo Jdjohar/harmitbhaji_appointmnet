@@ -48,7 +48,7 @@ function initialize(passport) {
     
   passport.use("social", new CustomStrategy(
     function(req, done) {
-      console.log("req: ",req);
+      //console.log("req: ",req);
       done(null, user);
       // User.findOne({
       //   username: req.body.username
