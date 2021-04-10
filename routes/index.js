@@ -672,7 +672,7 @@ function checkNotAuthenticated(req, res, next) {
 router.post("/api/v1/business/appointment/:id", async (req, res) => {
   try{
     // console.log("id", req.params)
-    const business_id = 8;
+    const business_id = 1;
     const m_service = req.body['m_service'];
     const appointment_date = req.body['appointment_date'];
     const time_slot = req.body['time_slot'];
@@ -729,7 +729,7 @@ router.post("/api/v1/business/appointment/:id", async (req, res) => {
 router.get("/api/v1/business/:id/appointment", async (req, res) => {
   try{
 
-    const business_id = "8";
+    const business_id = "1";
 
     // Check if Time Slot already exists (if so, throw error)
     // Select appointment_date WHERE business_id = $1 * FROM appointment_list
