@@ -113,17 +113,17 @@ router.get("/icsexport",  (req, res) => {
   .then((response)=>
     {
       console.log(response.data.data);      
-      console.log(response.data.data.time[0].day_name);      
+      //console.log(response.data.data.time[0].day_name);      
       console.log(response.data.data.business.phonenumber);      
       console.log(response.data.data.service[0].servicename);      
 
       const business_name = response.data.data.business.business_name;
-      const day = response.data.data.time[0].day_name;
+      //const day = response.data.data.time[0].day_name;
       const phonenumber = response.data.data.business.phonenumber;
       const service = response.data.data.service[0].servicename;
       
       res.render('icsexport', {
-        business_name, day, phonenumber, service
+        business_name, phonenumber, service
       });
 
 
@@ -133,7 +133,7 @@ router.get("/icsexport",  (req, res) => {
       var smtpTransport = nodemailer.createTransport({
         service: "Gmail",
         auth: {
-            user: "deepfilm12@gmail.com",
+            user: "jdwebservices1@gmail.com",
             pass: "Jashan86990"
         }
      });
@@ -166,11 +166,11 @@ router.get("/icsexport",  (req, res) => {
      }
 
 
-    let content = contentdetail("This is an email confiramtion for the following appointment:", "This is summary", business_name, day, phonenumber, service)
+    let content = contentdetail("This is an email confiramtion for the following appointment:", "This is summary", business_name, phonenumber, service)
 
      var mailOptions = {
        from: "deepfilm12@gmail.com",
-       to: "hkamboe@gmail.com",
+       to: "vaidyaritwik@gmail.com",
        subject: "Merchant Name - Confirmation Email",
        //html: "<h1>Welcome to my website</h1>",
        icalEvent: {
@@ -259,11 +259,11 @@ router.get("/api/v1/business/:id", async (req, res) => {
   console.log(req.params.id);
 
   try{
-const business = await db.query("select * from business where id = $1", [req.params.id]);
+const business = await db.query("select * from business_appoint where id = $1", [req.params.id]);
 const time =  await db.query("select * from week_time where id= $1" , [
   req.params.id,
 ]);
-const service =  await db.query("select * from add_services where business_id= $1 and weektime_id=$2" , [
+const service =  await db.query("select * from add_services where business_id= $1 and id=$2" , [
   req.params.id, req.params.id
 ]);
 //console.log(results.rows[0]);
@@ -310,7 +310,7 @@ router.post("/api/v1/business", async (req, res, next) => {
 router.post("/api/v1/business/:id/time", async (req, res) => {
   console.log(req.body, "Hello body");
   console.log(req.body.id, "Hello id");
-
+  console.log(req.params);
   try{
 
     const results = await db.query(
@@ -390,10 +390,10 @@ router.post("/api/v1/business/:id/services", async (req, res) => {
 //get all services
 
 router.get("/api/v1/business/:id/allservices", async (req, res) => {
-  console.log(req.params.id);
-
+  //console.log(req.params.id);
+  //console.log("ritwik:",req.query);
   try{
-const service =  await db.query("select * from add_services where business_id= $1" , [req.params.id]);
+const service =  await db.query("select * from add_services where business_id= $1" , [req.query.id]);
 //console.log(results.rows[0]);
 res.status(200).json({
   status:"succes",
@@ -509,20 +509,6 @@ router.post('/login', validInfo, async (req, res) => {
 
 
 
-// Login and register (currently unused)
-router.get("/users/login",checkAuthenticated, (req, res) => {
-  res.render("login");
-});
-
-router.get("/users/register",checkAuthenticated, (req,res) => {
-  res.render("register")
-});
-
-router.get("/users/logout", (req, res) => {
-  req.logOut();
-  req.flash('sucess_msg', "You have successfully logged out");
-  res.redirect("/users/login");
-});
 
 
 
@@ -598,20 +584,7 @@ router.post("/api/v1/business/register", async(req,res) => {
   
 })
 
-// Middlewares for redirecting authenticated/unauthenticated users
-function checkAuthenticated(req, res, next) {
-  if(req.isAuthenticated()) {
-    return res.redirect("/");
-  }
-  next();
-}
 
-function checkNotAuthenticated(req, res, next) {
-  if(req.isAuthenticated()){
-    return next();
-  }
-  res.redirect("/users/login");
-}
 
 
 
@@ -670,12 +643,13 @@ function checkNotAuthenticated(req, res, next) {
 
 // Appointment api link
 router.post("/api/v1/business/appointment/:id", async (req, res) => {
+  //console.log("ritwik: ", req)
   try{
     // console.log("id", req.params)
-    const business_id = 8;
-    const m_service = req.body['m_service'];
-    const appointment_date = req.body['appointment_date'];
-    const time_slot = req.body['time_slot'];
+    const business_id = req.body.postData.id;
+    const m_service = req.body.postData['m_service'];
+    const appointment_date = req.body.postData['appointment_date'];
+    const time_slot = req.body.postData['time_slot'];
     console.log('test');
 
     // Check if Time Slot already exists (if so, throw error)
@@ -750,6 +724,22 @@ router.get("/api/v1/business/:id/appointment", async (req, res) => {
   }
 });
 
+
+// Calendar events
+router.get("/api/v1/business/calendar/:id", async (req, res) => {
+  const id = req.query.id;
+  try{
+    const appointments = await db.query("SELECT * FROM appointment_list WHERE business_id = $1", [id]);
+    res.status(200).json({
+      status: "success",
+      appointments: appointments.rows
+    });
+    // console.log("appointments:",appointments);
+  }
+  catch(err){
+    console.log(err);
+  }
+})
 
 
 
