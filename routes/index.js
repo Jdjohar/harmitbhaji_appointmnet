@@ -394,11 +394,14 @@ router.get("/api/v1/business/:id/allservices", async (req, res) => {
   //console.log("ritwik:",req.query);
   try{
 const service =  await db.query("select * from add_services where business_id= $1" , [req.query.id]);
+const country = await db.query("SELECT * FROM business_appoint WHERE id = $1", [req.query.id]);
+//console.log("country ", country.rows[0].country);
 //console.log(results.rows[0]);
 res.status(200).json({
   status:"succes",
   data: {
     service: service.rows,
+    country:  country.rows[0].country
   },
 });
 }catch (err){
@@ -648,10 +651,11 @@ router.post("/api/v1/business/appointment/:id", async (req, res) => {
     // console.log("id", req.params)
     const business_id = req.body.postData.id;
     const m_service = req.body.postData['m_service'];
-    const appointment_date = req.body.postData['appointment_date'];
+    let appointment_date = new Date(req.body.postData['appointment_date']);
     const time_slot = req.body.postData['time_slot'];
     console.log('test');
-
+    console.log("appointment", new Date(appointment_date.getTime() - (appointment_date.getTimezoneOffset() * 60000)));
+    appointment_date = new Date(appointment_date.getTime() - (appointment_date.getTimezoneOffset() * 60000));
     // Check if Time Slot already exists (if so, throw error)
     const time = await db.query("SELECT * FROM appointment_list WHERE business_id = $1 and appointment_date = $2 and time_slot = $3", 
     [business_id, appointment_date, time_slot]);
