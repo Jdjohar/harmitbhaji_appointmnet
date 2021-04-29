@@ -85,4 +85,19 @@ CREATE TABLE appointment_list (
      time_slot VARCHAR(50) NOT NULL  -- changed data type of time_slot to VARCHAR
 );
 
+
+-- holidays table
+CREATE TABLE holidays (
+    id BIGSERIAL PRIMARY KEY NOT NULL,
+    country VARCHAR(200),
+    dates JSONB
+);
+
+-- custom holidays table
+CREATE TABLE custom_holidays (
+    id BIGSERIAL PRIMARY KEY NOT NULL,
+    business_id BIGINT NOT NULL REFERENCES business_appoint(id),
+    dates JSONB
+);
+
 UPDATE users SET email = jdeep5141@gmail.com WHERE id = 1;

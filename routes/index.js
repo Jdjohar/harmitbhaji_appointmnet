@@ -284,12 +284,18 @@ res.status(200).json({
 
 // CREAT A BUSINESS - Sign up Form
 router.post("/api/v1/business", async (req, res, next) => {
-  console.log(req.body);
+  console.log("national: ",req.body);
   try{
     const results = await db.query("INSERT INTO business_appoint(business_name, business_email, country, city, province, phonenumber) values ($1, $2, $3, $4, $5, $6) returning *", [req.body.business_name,req.body.business_email, req.body.country, req.body.city, req.body.province,req.body.phonenumber] );
-    console.log(results);
-
-    res.status(201).json({
+    const countryExists = await db.query("SELECT * FROM holidays WHERE country = $1",[req.body.country]);
+    const customHolidays = await db.query("INSERT INTO custom_holidays(business_id, dates) VALUES ($1, $2) returning *",[results.rows[0].id, req.body.national]);
+    console.log("custom holidays: ", customHolidays);
+    //console.log("country Exists: ",countryExists);
+    //console.log(results);
+    if(countryExists.rows.length === 0){
+      const holidays = await db.query("INSERT INTO holidays(country, dates) VALUES ($1, $2)",[req.body.country, req.body.national]);
+    }  
+    res.status(201).json({ 
       status:"succes",
       data: {
         business:results.rows[0],
@@ -336,7 +342,7 @@ router.post("/api/v1/business/:id/time", async (req, res) => {
 
 // add Services - Ritwik
 router.post("/api/v1/business/:id/services", async (req, res) => {
-  //console.log(req.body);
+  //console.log("services:",req.body);
   const {inputList} = req.body;
   const {id} = req.body;
   try{
@@ -743,8 +749,55 @@ router.get("/api/v1/business/calendar/:id", async (req, res) => {
   catch(err){
     console.log(err);
   }
-})
+});
 
+
+// get holidays
+router.get("/api/v1/business/:id/holiday", async (req, res) => {
+  const id = req.query.id;
+  //console.log("id:",req);
+  //console.log(id);
+  try{
+    const holidays = await db.query("SELECT * FROM custom_holidays WHERE business_id = $1",[id]);
+    //console.log("holidays: ",holidays);
+
+    if(holidays.rows.length > 0){
+      res.status(200).json({
+        status: "success",
+        holidays: holidays.rows[0].dates
+      });
+    }
+  }
+  catch(err){
+    console.log(err);
+  }
+}) 
+
+//update custom holidays
+router.put("/api/v1/business/:id/holiday", async (req, res) => {
+  let {id, custom} = req.body.data;
+  console.log(id);
+  console.log(custom);
+  custom = custom.map(day => ({
+    date: new Date(day.date),
+    title: day.title
+  }));
+  custom = custom.map(day => ({
+    date: new Date(day.date.getTime() - (day.date.getTimezoneOffset() * 60000)),
+    title: day.title
+  }))
+  console.log(custom);
+  try{
+    const newHolidays = await db.query("UPDATE custom_holidays SET dates = $1 WHERE business_id = $2", [custom, id])
+    console.log(newHolidays);
+    res.status(200).json({
+      success: "Holidays Successfully updated"
+    })
+  }
+  catch (err) {
+    console.log(err);
+  }
+})
 
 
 
