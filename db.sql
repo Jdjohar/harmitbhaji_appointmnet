@@ -36,7 +36,8 @@ CREATE TABLE business_appoint (
     country VARCHAR(50) NOT NULL,
     city VARCHAR(50) NOT NULL,
     province VARCHAR(50) NOT NULL,
-    phonenumber VARCHAR(50) NOT NULL
+    phonenumber VARCHAR(50) NOT NULL,
+    max_appoint BIGINT NOT NULL
 );
 
 CREATE TABLE add_services (

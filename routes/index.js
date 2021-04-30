@@ -284,16 +284,18 @@ res.status(200).json({
 
 // CREAT A BUSINESS - Sign up Form
 router.post("/api/v1/business", async (req, res, next) => {
-  console.log("national: ",req.body);
+  console.log("req: ",req.body);
+  const {business_name, business_email, country, city, province, phonenumber,national, max_appoint} = req.body;
   try{
-    const results = await db.query("INSERT INTO business_appoint(business_name, business_email, country, city, province, phonenumber) values ($1, $2, $3, $4, $5, $6) returning *", [req.body.business_name,req.body.business_email, req.body.country, req.body.city, req.body.province,req.body.phonenumber] );
-    const countryExists = await db.query("SELECT * FROM holidays WHERE country = $1",[req.body.country]);
-    const customHolidays = await db.query("INSERT INTO custom_holidays(business_id, dates) VALUES ($1, $2) returning *",[results.rows[0].id, req.body.national]);
+
+    const results = await db.query("INSERT INTO business_appoint(business_name, business_email, country, city, province, phonenumber, max_appoint) values ($1, $2, $3, $4, $5, $6, $7) returning *", [business_name,business_email, country, city, province,phonenumber, max_appoint] );
+    const countryExists = await db.query("SELECT * FROM holidays WHERE country = $1",[country]);
+    const customHolidays = await db.query("INSERT INTO custom_holidays(business_id, dates) VALUES ($1, $2) returning *",[results.rows[0].id, national]);
     console.log("custom holidays: ", customHolidays);
     //console.log("country Exists: ",countryExists);
     //console.log(results);
     if(countryExists.rows.length === 0){
-      const holidays = await db.query("INSERT INTO holidays(country, dates) VALUES ($1, $2)",[req.body.country, req.body.national]);
+      const holidays = await db.query("INSERT INTO holidays(country, dates) VALUES ($1, $2)",[country, national]);
     }  
     res.status(201).json({ 
       status:"succes",
@@ -665,9 +667,11 @@ router.post("/api/v1/business/appointment/:id", async (req, res) => {
     // Check if Time Slot already exists (if so, throw error)
     const time = await db.query("SELECT * FROM appointment_list WHERE business_id = $1 and appointment_date = $2 and time_slot = $3", 
     [business_id, appointment_date, time_slot]);
+    const max_appoint = await db.query("SELECT max_appoint FROM business_appoint WHERE id=$1", [business_id]);
+    
       
     
-  if (time.rows.length > 0) {
+  if (time.rows.length >= parseInt(max_appoint.rows[0].max_appoint)) {
       return res.status(204).json({
         status: "204",
         message: "This Time Slot is already Booked!"
