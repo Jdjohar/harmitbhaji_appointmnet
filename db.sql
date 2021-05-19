@@ -59,7 +59,7 @@ CREATE TABLE business (
 
 CREATE TABLE week_time (
     id BIGSERIAL NOT NULL PRIMARY KEY,
-    business_id BIGINT NOT NULL REFERENCES business_appoint(id),
+    business_id BIGINT NULL REFERENCES business_appoint(id),
     start_time TIME NOT NULL,
     end_time TIME NOT NULL ,
     day_name  VARCHAR(50) 

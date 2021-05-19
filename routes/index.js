@@ -72,57 +72,58 @@ console.log("jashan");
 });
 
 // using this route .ics file send to user email.
-router.get("/send",  (req, res) => {
-  res.render('send', {page:'send ', menuId:'second'});
+// router.get("/send",  (req, res) => {
+//   res.render('send', {page:'send ', menuId:'second'});
 
-  const output = ` 
+//   const output = ` 
   
-  <p>Your ICS file here</p>
-  <a href="www.jdwebservices.com/test.ics">ICS file</a>
-  `;
+//   <p>Your ICS file here</p>
+//   <a href="www.jdwebservices.com/test.ics">ICS file</a>
+//   `;
 
   
-var transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'deepfilm12@gmail.com',
-    pass: 'Jashan86990'
-  }
-});
+// var transporter = nodemailer.createTransport({
+//   service: 'gmail',
+//   auth: {
+//     user: 'deepfilm12@gmail.com',
+//     pass: 'Jashan86990'
+//   }
+// });
 
-var mailOptions = {
-  from: 'deepfilm12@gmail.com',
-  to: 'jdeep514@gmail.com',
-  subject: 'Merchant Name - Confirmation Email',
-  text: 'That was easy!',
-  html: output
-};
+// var mailOptions = {
+//   from: 'deepfilm12@gmail.com',
+//   to: 'jdeep514@gmail.com',
+//   subject: 'Merchant Name - Confirmation Email',
+//   text: 'That was easy!',
+//   html: output
+// };
 
-transporter.sendMail(mailOptions, function(error, info){
-  if (error) {
-    console.log(error);
-  } else {
-    console.log('Email sent: ' + info.response);
-  }
-});
+// transporter.sendMail(mailOptions, function(error, info){
+//   if (error) {
+//     console.log(error);
+//   } else {
+//     console.log('Email sent: ' + info.response);
+//   }
+// });
   
-  });
+//   });
 
 router.get("/icsexport",  (req, res) => {
   axios.get("http://localhost:3000/api/v1/business/1")
   .then((response)=>
     {
       console.log(response.data.data);      
-      //console.log(response.data.data.time[0].day_name);      
       console.log(response.data.data.business.phonenumber);      
       console.log(response.data.data.service[0].servicename);      
 
       const business_name = response.data.data.business.business_name;
-      //const day = response.data.data.time[0].day_name;
+
+      // const day = response.data.data.time[0].day_name;
       const phonenumber = response.data.data.business.phonenumber;
       const service = response.data.data.service[0].servicename;
       
-      res.render('icsexport', {
+      res.render('/icsexport', {
+
         business_name, phonenumber, service
       });
 
@@ -170,7 +171,7 @@ router.get("/icsexport",  (req, res) => {
 
      var mailOptions = {
        from: "deepfilm12@gmail.com",
-       to: "vaidyaritwik@gmail.com",
+       to: "jdeep514@gmail.com",
        subject: "Merchant Name - Confirmation Email",
        //html: "<h1>Welcome to my website</h1>",
        icalEvent: {
@@ -657,10 +658,18 @@ router.post("/api/v1/business/appointment/:id", async (req, res) => {
   //console.log("ritwik: ", req)
   try{
     // console.log("id", req.params)
-    const business_id = req.body.postData.id;
-    const m_service = req.body.postData['m_service'];
-    let appointment_date = new Date(req.body.postData['appointment_date']);
-    const time_slot = req.body.postData['time_slot'];
+
+//     dought lines
+//     const business_id = req.body.postData.id;
+//     const m_service = req.body.postData['m_service'];
+//     let appointment_date = new Date(req.body.postData['appointment_date']);
+//     const time_slot = req.body.postData['time_slot'];
+
+    const business_id = 1;
+    const m_service = req.body['m_service'];
+    const appointment_date = req.body['appointment_date'];
+    const time_slot = req.body['time_slot'];
+
     console.log('test');
     console.log("appointment", new Date(appointment_date.getTime() - (appointment_date.getTimezoneOffset() * 60000)));
     appointment_date = new Date(appointment_date.getTime() - (appointment_date.getTimezoneOffset() * 60000));
@@ -717,7 +726,7 @@ router.post("/api/v1/business/appointment/:id", async (req, res) => {
 router.get("/api/v1/business/:id/appointment", async (req, res) => {
   try{
 
-    const business_id = "8";
+    const business_id = "1";
 
     // Check if Time Slot already exists (if so, throw error)
     // Select appointment_date WHERE business_id = $1 * FROM appointment_list
@@ -802,20 +811,6 @@ router.put("/api/v1/business/:id/holiday", async (req, res) => {
     console.log(err);
   }
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 module.exports = router;
