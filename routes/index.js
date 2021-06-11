@@ -660,15 +660,16 @@ router.post("/api/v1/business/appointment/:id", async (req, res) => {
     // console.log("id", req.params)
 
 //     dought lines
-//     const business_id = req.body.postData.id;
-//     const m_service = req.body.postData['m_service'];
-//     let appointment_date = new Date(req.body.postData['appointment_date']);
-//     const time_slot = req.body.postData['time_slot'];
+    console.log(req.body);  
+    const business_id = req.body.postData.id;
+    const m_service = req.body.postData['m_service'];
+    let appointment_date = new Date(req.body.postData['appointment_date']);
+    const time_slot = req.body.postData['time_slot'];
 
-    const business_id = 1;
-    const m_service = req.body['m_service'];
-    const appointment_date = req.body['appointment_date'];
-    const time_slot = req.body['time_slot'];
+    // const business_id = 1;
+    // const m_service = req.body['m_service'];
+    // const appointment_date = req.body['appointment_date'];
+    // const time_slot = req.body['time_slot'];
 
     console.log('test');
     console.log("appointment", new Date(appointment_date.getTime() - (appointment_date.getTimezoneOffset() * 60000)));
