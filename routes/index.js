@@ -579,7 +579,7 @@ router.post("/api/v1/business/register", async(req,res) => {
     if(results.rows.length > 0){
       res.json({
         status: "failure",
-        data: results.rows[0]
+        data: []
       })
     } else {
       const newUser = await db.query(
