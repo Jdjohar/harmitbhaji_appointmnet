@@ -68,10 +68,14 @@ CREATE TABLE week_time (
 -- Users Table
 CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY NOT NULL,
-    name VARCHAR(200) NOT NULL,
-    email VARCHAR(200) NOT NULL,
+    name VARCHAR(200) NULL,
+    email VARCHAR(200) NULL,
     password VARCHAR(200),
-    cpassword VARCHAR(200), 
+    emailverifyotp VARCHAR(20),
+    emailverifed INT NULL,
+    lastlogin VARCHAR(200),
+    created_at VARCHAR(200),
+    update_at VARCHAR(200),
     UNIQUE (email)
 );
 INSERT INTO users (name, email, password) VALUES ('Jashan','jdeep514@gmail.com', 'Jashan86990');
@@ -102,3 +106,4 @@ CREATE TABLE custom_holidays (
 );
 
 UPDATE users SET email = jdeep5141@gmail.com WHERE id = 1;
+

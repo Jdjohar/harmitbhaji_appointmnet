@@ -86,7 +86,7 @@ console.log("jashan");
 //   service: 'gmail',
 //   auth: {
 //     user: 'deepfilm12@gmail.com',
-//     pass: 'Jashan86990'
+//     pass: 'phzizvxexwhbkckb'
 //   }
 // });
 
@@ -135,7 +135,7 @@ router.get("/icsexport",  (req, res) => {
         service: "Gmail",
         auth: {
             user: "jdwebservices1@gmail.com",
-            pass: "Jashan86990"
+            pass: "phzizvxexwhbkckb"
         }
      });
 
@@ -200,6 +200,13 @@ router.get("/icsexport",  (req, res) => {
              html: htmlbody,
      
          }
+      var smtpTransport = nodemailer.createTransport({
+        service: "Gmail",
+        auth: {
+            user: "jdwebservices1@gmail.com",
+            pass: "phzizvxexwhbkckb"
+        }
+     });
      smtpTransport.sendMail(mailOptions, function (error, response) {
              if (error) {
                  console.log(error);
@@ -547,23 +554,154 @@ router.post("/api/v1/business/social-login", async(req,res)=> {
 })
 
 // Normal login
-router.post("/api/v1/business/login",function(req,res,next){
-  passport.authenticate("local", function(err, user, info) {
-    if(err) {
-      return next(err);
+router.post("/api/v1/business/login", async(req,res,next)=>{
+  console.log(req.body);
+  const { email, emailotp, password } = req.body;
+  console.log(email);
+  const results = await db.query(`SELECT * FROM users WHERE email = '${email}'`);
+    console.log(results.rows);
+
+    
+    if(results.rows.length > 0) {
+      const user = results.rows[0];
+      
+      if(user.emailverifed == 0 || user.emailverifed == null || user.emailverifed == "")
+      {
+        if(emailotp != "")
+        {
+          if(user.emailverifyotp == emailotp)
+          {
+            const custom = "1";
+            const newHolidays = await db.query(`UPDATE users SET emailverifed = '${custom}' WHERE email = '${user.email}'`);
+             console.log(newHolidays.rowCount);
+            
+        if(user.password == 0 || user.password == null || user.password == "")
+        {
+             return res.status(200).json({
+              status: "Email Verified Successfullly",
+              successpath: "createpassword",
+              redirect: "/login"
+            });
+          }else{
+            return res.status(200).json({
+             status: "Email Verified Successfullly",
+             successpath: "password",
+             redirect: "/login"
+           });
+          }
+          }else{
+            return res.status(200).json({
+             status: "Your Email Otp was incorrect",
+             successpath: "otp",
+             redirect: "/login"
+           });
+          }
+
+        }else{
+          const custom = (Math.floor(Math.random() * 10000) + 10000).toString().substring(1);
+        const newHolidays = await db.query(`UPDATE users SET emailverifyotp = '${custom}' WHERE email = '${user.email}'`);
+         console.log(newHolidays.rowCount);
+         const output = `<p>Your Verification Code is: ${custom}</p>`;
+         sendemail(email,"jdwebservices1@gmail.com", "Email Verification OTP", output);
+         return res.status(200).json({
+          status: "Otp Send On your Email",
+          successpath: "otp",
+          redirect: "/login"
+        });
+      }
+      }else{
+        if(user.password == 0 || user.password == null || user.password == "")
+        {
+             return res.status(200).json({
+              status: "data found Create Password",
+              successpath: "createpassword",
+              redirect: "/login"
+            });
+          }else{
+        if(password == "")
+        {
+          return res.status(200).json({
+           status: "data found",
+           successpath: "password",
+           redirect: "/login"
+         });
+
+        }else{
+          passport.authenticate("local", function(err, user, info) {
+            if(err) {
+              return next(err);
+            }
+            if(!user) {
+              return res.status(401).json({
+                status: "failure",
+                successpath: "email",
+                redirect: "/login"
+              });
+            }
+            return res.status(200).json({
+              status: "success",
+              successpath: "success",
+              data: user,
+              redirect: "/"
+            });
+          })(req, res, next);
+        }
+      }
+      }
+}else{
+  const custom = (Math.floor(Math.random() * 10000) + 10000).toString().substring(1);
+  const newUser = await db.query(`INSERT INTO users(email, emailverifyotp, emailverifed) VALUES('${email}', '${custom}', '0')`);
+  const output = `<p>Your Verification Code is: ${custom}</p>`;
+  sendemail(email,"jdwebservices1@gmail.com", "Email Verification OTP", output);
+
+  return res.status(200).json({
+    status: "Otp Send On your Email",
+    successpath: "otp",
+    redirect: "/login"
+  });
+}
+
+
+async function generateOTP(limit) {
+          
+    // Declare a digits variable 
+    // which stores all digits
+    var digits = '0123456789';
+    let OTP = '';
+    for (let i = 0; i < limit; i++ ) {
+        OTP += digits[Math.floor(Math.random() * 10)];
     }
-    if(!user) {
-      return res.status(401).json({
-        status: "failure",
-        redirect: "/login"
-      });
-    }
-    return res.status(200).json({
-      status: "success",
-      data: user,
-      redirect: "/"
-    });
-  })(req, res, next);
+    return OTP;
+}
+module.exports = {
+  generateOTP,
+};
+async function sendemail(sendto,sendfrom, subject, htmlbody) {
+  mailOptions = {
+      from: sendfrom,
+      to: sendto,
+      subject: subject,
+      html: htmlbody,
+
+  }
+var smtpTransport = nodemailer.createTransport({
+ service: "Gmail",
+ auth: {
+     user: "jdwebservices1@gmail.com",
+     pass: "phzizvxexwhbkckb"
+ }
+});
+smtpTransport.sendMail(mailOptions, function (error, response) {
+      if (error) {
+          console.log(error);
+      } else {
+          console.log("Message sent: " , response);
+      }
+  })
+}
+module.exports = {
+  sendemail,
+};
 }
 );
 
@@ -577,20 +715,28 @@ router.post("/api/v1/business/register", async(req,res) => {
     console.log(results.rows);
 
     if(results.rows.length > 0){
-      res.json({
-        status: "failure",
-        data: []
-      })
+      const user = results.rows[0];
+      const newHolidays = await db.query(`UPDATE users SET name = '${name}', password = '${hashedpassword}' WHERE email = '${user.email}'`);
+      console.log(newHolidays.rowCount);
+     
+      return res.status(200).json({
+        status: "success",
+        successpath: "success",
+        data: user,
+        redirect: "/"
+     });
     } else {
       const newUser = await db.query(
-        `INSERT INTO users(name, email, password, cpassword)
-        VALUES($1, $2, $3, $4)
-        `, [name, email, hashedpassword, hashedpassword]
+        `INSERT INTO users(name, email, password, emailverifed)
+        VALUES($1, $2, $3, '0')
+        `, [name, email, hashedpassword]
       )
+      const user = newUser.rows[0];
       res.status(200).json({
         status: "success",
-        data: newUser.rows,
-        redirect: "/api/v1/business/login"
+        successpath: "success",
+        data: user,
+        redirect: "/"
       });
     }
   

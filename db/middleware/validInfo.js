@@ -12,14 +12,15 @@ module.exports = function (req, res, next) {
         } else if(validEmail(email)) {
             return res.status(401).json('Email invalid');
         }
-    } else if(req.path === "/login") {
+    } 
+    // else if(req.path === "/login") {
 
-        if([email, password].every(Boolean)) {
-            return res.status(401).json('Missing info');
-        } else if(validEmail(email)) {
-            return res.status(401).json('Email invalid');
-        }
-    }
+    //     if([email, password].every(Boolean)) {
+    //         return res.status(401).json('Missing info');
+    //     } else if(validEmail(email)) {
+    //         return res.status(401).json('Email invalid');
+    //     }
+    // }
 
     next();
 }
