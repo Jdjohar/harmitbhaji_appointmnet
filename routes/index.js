@@ -57,7 +57,7 @@ router.get('/contact', function(req, res, next) {
 
 /* GET Time page. */
 router.get('/next', function(req, res, next) {
-  res.render('next', {page:'Second ', menuId:'second'});
+  res.render('next', {page:'Second Title', menuId:'second'});
 });
 
 
