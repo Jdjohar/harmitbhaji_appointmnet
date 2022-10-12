@@ -554,12 +554,157 @@ router.post("/api/v1/business/social-login", async(req,res)=> {
 })
 
 // Normal login
-router.post("/api/v1/business/login", async(req,res,next)=>{
+router.post("/api/v1/business/forget_password", async(req,res)=>{
   console.log(req.body);
-  const { email, emailotp, password } = req.body;
+  const { email } = req.body;
   console.log(email);
   const results = await db.query(`SELECT * FROM users WHERE email = '${email}'`);
     console.log(results.rows);
+
+    
+    if(results.rows.length > 0) {
+      const user = results.rows[0];
+      // const custom = (Math.floor(Math.random() * 10000) + 10000).toString().substring(1);
+      const custom = `${user.email}${user.id}`;
+      console.log(custom.toString());
+      let hashedpassword = await bcrypt.hash(custom.toString(), 10);
+      console.log(hashedpassword);
+    const newHolidays = await db.query(`UPDATE users SET password = '${hashedpassword}' WHERE email = '${user.email}'`);
+
+     const output = `<p>Your Login Password Reset link is: http://tachitool22.herokuapp.com/reset?key=${hashedpassword}</p>`;
+     sendemail(user.email,"jdwebservices1@gmail.com", "Password Reset Confirmation", output);
+     return res.status(200).json({
+      status: "Password Reset Link Send On your Email",
+      successpath: "success",
+      redirect: "/login"
+    });
+    }else{
+    
+      return res.status(200).json({
+        status: "failed",
+        successpath: "failed",
+        messagetxt: "User Not Found",
+        redirect: "/login"
+      });
+    }
+
+    
+      async function generateOTP(limit) {
+                
+        // Declare a digits variable 
+        // which stores all digits
+        var digits = '0123456789';
+        let OTP = '';
+        for (let i = 0; i < limit; i++ ) {
+            OTP += digits[Math.floor(Math.random() * 10)];
+        }
+        return OTP;
+      }
+      module.exports = {
+      generateOTP,
+      };
+      async function sendemail(sendto,sendfrom, subject, htmlbody) {
+      mailOptions = {
+          from: sendfrom,
+          to: sendto,
+          subject: subject,
+          html: htmlbody,
+
+      }
+      var smtpTransport = nodemailer.createTransport({
+      service: "Gmail",
+      auth: {
+        user: "jdwebservices1@gmail.com",
+        pass: "phzizvxexwhbkckb"
+      }
+      });
+      smtpTransport.sendMail(mailOptions, function (error, response) {
+          if (error) {
+              console.log(error);
+          } else {
+              console.log("Message sent: " , response);
+          }
+      })
+      }
+      module.exports = {
+      sendemail,
+      };
+});
+// Normal login
+router.post("/api/v1/business/setpasscode", async(req,res)=>{
+  console.log(req.query);
+  console.log(req.body);
+  const { key } = req.query;
+  const { password } = req.body;
+  console.log(key);
+  const results = await db.query(`SELECT * FROM users WHERE password = '${key}'`);
+    console.log(results.rows);
+
+    
+    if(results.rows.length > 0) {
+      const user = results.rows[0];
+      // const custom = (Math.floor(Math.random() * 10000) + 10000).toString().substring(1);
+      if(password != ""){
+      const custom = password;
+      console.log(custom);
+      let hashedpassword = await bcrypt.hash(custom, 10);
+    const newHolidays = await db.query(`UPDATE users SET password = '${hashedpassword}' WHERE email = '${user.email}'`);
+
+     const output = `<p>Your Login Password Reset Successfully</p>`;
+     sendemail(user.email,"jdwebservices1@gmail.com", "Password Updated", output);
+     return res.status(200).json({
+      status: "Login Password Reset Successfully",
+      successpath: "success",
+      redirect: "/login"
+    });
+  }else{
+    return res.status(200).json({
+      status: "failed",
+      successpath: "failed",
+      messagetxt: "Set New Password",
+      redirect: "/login"
+    });
+  }
+    }else{
+    
+      return res.status(200).json({
+        status: "failed",
+        successpath: "failed",
+        messagetxt: "Password Reset Link Exipired",
+        redirect: "/login"
+      });
+    }
+
+      async function sendemail(sendto,sendfrom, subject, htmlbody) {
+      mailOptions = {
+          from: sendfrom,
+          to: sendto,
+          subject: subject,
+          html: htmlbody,
+
+      }
+      var smtpTransport = nodemailer.createTransport({
+      service: "Gmail",
+      auth: {
+        user: "jdwebservices1@gmail.com",
+        pass: "phzizvxexwhbkckb"
+      }
+      });
+      smtpTransport.sendMail(mailOptions, function (error, response) {
+          if (error) {
+              console.log(error);
+          } else {
+              console.log("Message sent: " , response);
+          }
+      })
+      }
+      module.exports = {
+      sendemail,
+      };
+});
+router.post("/api/v1/business/login", async(req,res,next)=>{
+  const { email, emailotp, password } = req.body;
+  const results = await db.query(`SELECT * FROM users WHERE email = '${email}'`);
 
     
     if(results.rows.length > 0) {
