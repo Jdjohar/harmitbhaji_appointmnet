@@ -571,8 +571,13 @@ router.post("/api/v1/business/forget_password", async(req,res)=>{
       console.log(hashedpassword);
     const newHolidays = await db.query(`UPDATE users SET password = '${hashedpassword}' WHERE email = '${user.email}'`);
 
-     const output = `<p>Your Login Password Reset link is: http://tachitool22.herokuapp.com/reset?key=${hashedpassword}</p>`;
-     sendemail(user.email,"jdwebservices1@gmail.com", "Password Reset Confirmation", output);
+     const output = `
+     <p>Hi,</p>
+     <p>Your Login password reset link is: http://tachitool22.herokuapp.com/reset?key=${hashedpassword}</p>
+     <p>This link will only work once and cannot be used to reset your password multiple times.</p>
+     <p></p>
+     <p>Reserveze.com Team</p>`;
+     sendemail(user.email,"jdwebservices1@gmail.com", "Password Reset Link for Reserveze.com", output);
      return res.status(200).json({
       status: "Password Reset Link Send On your Email",
       successpath: "success",
@@ -650,8 +655,13 @@ router.post("/api/v1/business/setpasscode", async(req,res)=>{
       let hashedpassword = await bcrypt.hash(custom, 10);
     const newHolidays = await db.query(`UPDATE users SET password = '${hashedpassword}' WHERE email = '${user.email}'`);
 
-     const output = `<p>Your Login Password Reset Successfully</p>`;
-     sendemail(user.email,"jdwebservices1@gmail.com", "Password Updated", output);
+     
+    const output = `
+    <p>Hi,</p>
+    <p>Your Login Password Reset Successfully</p>
+    <p>Reserveze.com Team</p>
+    `;
+     sendemail(user.email,"jdwebservices1@gmail.com", "Password Updated from Reserveze.com", output);
      return res.status(200).json({
       status: "Login Password Reset Successfully",
       successpath: "success",
@@ -670,7 +680,7 @@ router.post("/api/v1/business/setpasscode", async(req,res)=>{
       return res.status(200).json({
         status: "failed",
         successpath: "failed",
-        messagetxt: "Password Reset Link Exipired",
+        messagetxt: "Password Reset Link Expired",
         redirect: "/login"
       });
     }
@@ -746,8 +756,16 @@ router.post("/api/v1/business/login", async(req,res,next)=>{
           const custom = (Math.floor(Math.random() * 10000) + 10000).toString().substring(1);
         const newHolidays = await db.query(`UPDATE users SET emailverifyotp = '${custom}' WHERE email = '${user.email}'`);
          console.log(newHolidays.rowCount);
-         const output = `<p>Your Verification Code is: ${custom}</p>`;
-         sendemail(email,"jdwebservices1@gmail.com", "Email Verification OTP", output);
+         const output = `
+              <p>Hi,</p>
+              <p>Thanks for signing up at reserveze.com</p>
+              <p>Your email has been validated. </p>
+              <p>To confirm your email and proceed further, please use the verification code below:</p>
+              <p>Your Verification Code is: ${custom}</p>
+              <p>See you on the flip side</p>
+              <p>Reserveze.com Team</p>
+              `;
+         sendemail(email,"jdwebservices1@gmail.com", "Email Verification Code from Reserveze.com", output);
          return res.status(200).json({
           status: "Otp Send On your Email",
           successpath: "otp",
@@ -796,8 +814,16 @@ router.post("/api/v1/business/login", async(req,res,next)=>{
 }else{
   const custom = (Math.floor(Math.random() * 10000) + 10000).toString().substring(1);
   const newUser = await db.query(`INSERT INTO users(email, emailverifyotp, emailverifed) VALUES('${email}', '${custom}', '0')`);
-  const output = `<p>Your Verification Code is: ${custom}</p>`;
-  sendemail(email,"jdwebservices1@gmail.com", "Email Verification OTP", output);
+  const output = `
+  <p>Hi,</p>
+  <p>Thanks for signing up at reserveze.com</p>
+  <p>Your email has been validated. </p>
+  <p>To confirm your email and proceed further, please use the verification code below:</p>
+  <p>Your Verification Code is: ${custom}</p>
+  <p>See you on the flip side</p>
+  <p>Reserveze.com Team</p>
+  `;
+  sendemail(email,"jdwebservices1@gmail.com", "Email Verification Code from Reserveze.com", output);
 
   return res.status(200).json({
     status: "Otp Send On your Email",
